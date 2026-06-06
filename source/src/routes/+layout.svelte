@@ -3,6 +3,7 @@
 	import { apiUrl } from '$lib/api/config';
 	import Header from '$lib/components/Header.svelte';
 	import Footer from '$lib/components/Footer.svelte';
+	import { initSession } from '$lib/auth/session.svelte';
 
 	const themeCssUrl = apiUrl('/api/v1/storefront/theme.css');
 
@@ -11,6 +12,10 @@
 	const site = $derived(data.config.site);
 	const frontendConfig = $derived(data.config.frontend.config ?? {});
 	const showCategoryNav = $derived(frontendConfig.show_category_nav !== false);
+
+	$effect(() => {
+		void initSession();
+	});
 
 	$effect(() => {
 		if (site.primary_color) {

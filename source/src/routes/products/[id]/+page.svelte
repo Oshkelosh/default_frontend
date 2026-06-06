@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import ErrorState from '$lib/components/ErrorState.svelte';
+	import AddToCart from '$lib/components/AddToCart.svelte';
 	import { formatPrice, getPrimaryImage } from '$lib/utils/product';
 	import { invalidateAll } from '$app/navigation';
 
@@ -31,6 +32,7 @@
 		<div>
 			<h1>{product.name}</h1>
 			<p class="product-detail__price">{price}</p>
+			<AddToCart {product} />
 			{#if product.description}
 				<p class="product-detail__description">{product.description}</p>
 			{/if}

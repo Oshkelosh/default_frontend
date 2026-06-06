@@ -85,6 +85,106 @@ export interface ProductListParams {
 	status?: string;
 }
 
+export interface User {
+	id: number;
+	email: string;
+	full_name?: string | null;
+	is_active?: boolean;
+	is_admin?: boolean;
+	created_at: string;
+	updated_at: string;
+}
+
+export interface Token {
+	access_token: string;
+	refresh_token: string;
+	token_type?: string;
+}
+
+export interface UserRegister {
+	email: string;
+	password: string;
+	full_name?: string | null;
+}
+
+export interface UserLogin {
+	email: string;
+	password: string;
+}
+
+export interface CartItemWithPrice {
+	id: number;
+	cart_id: number;
+	product_id: number;
+	quantity: number;
+	unit_price_cents: number;
+	unit_price?: string | number;
+	line_total_cents: number;
+	line_total?: string | number;
+	created_at?: string;
+	updated_at?: string;
+}
+
+export interface Cart {
+	id: number;
+	session_id?: string | null;
+	user_id?: number | null;
+	items: CartItemWithPrice[];
+	subtotal_cents: number;
+	subtotal?: string | number;
+	created_at?: string;
+	updated_at?: string;
+}
+
+export interface OrderItem {
+	id: number;
+	order_id: number;
+	product_id?: number | null;
+	product_name: string;
+	product_sku: string;
+	quantity: number;
+	unit_price_cents: number;
+	unit_price?: string;
+	total_price_cents: number;
+	total_price?: string;
+	created_at?: string;
+}
+
+export interface Order {
+	id: number;
+	session_id?: string | null;
+	user_id?: number | null;
+	status: string;
+	total_cents: number;
+	total?: string;
+	tax_cents: number;
+	tax?: string;
+	shipping_cents: number;
+	shipping?: string;
+	currency: string;
+	shipping_address?: Record<string, unknown> | null;
+	billing_address?: Record<string, unknown> | null;
+	notes?: string | null;
+	items?: OrderItem[];
+	created_at: string;
+	updated_at: string;
+}
+
+export interface CheckoutSession {
+	success?: boolean;
+	session_id?: string;
+	url?: string;
+	order_id?: string | number;
+	amount?: number;
+	currency?: string;
+	note?: string;
+}
+
+export interface CartLine {
+	item: CartItemWithPrice;
+	product: Product | null;
+}
+
 export class ApiError extends Error {
 	status: number;
 
