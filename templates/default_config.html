@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf_field with context %}
+
+{% block title %}Default Storefront{% endblock %}
+
+{% block content %}
+<h1>Default Storefront</h1>
+
+<div class="card">
+    <p style="color:var(--clr-text-muted);margin-bottom:16px;">
+        Site-wide branding (name, logo, colors) is configured under
+        <a href="/admin/settings">Site Settings</a>.
+    </p>
+
+    <form method="post" action="/admin/frontends/default/save" class="form">
+        {{ csrf_field() }}
+        <div class="form-group">
+            <label>
+                <input type="checkbox" name="is_enabled" {% if addon and addon.is_enabled %}checked{% endif %} />
+                Enable this storefront
+            </label>
+        </div>
+
+        <div class="form-group">
+            <label for="layout">Product layout</label>
+            <select id="layout" name="layout">
+                <option value="grid" {% if config.get('layout') == 'grid' %}selected{% endif %}>Grid</option>
+                <option value="list" {% if config.get('layout') == 'list' %}selected{% endif %}>List</option>
+            </select>
+        </div>
+
+        <fieldset class="form-group" style="border:1px solid var(--clr-border);border-radius:8px;padding:16px;margin:0 0 16px;">
+            <legend style="padding:0 8px;font-weight:600;">Main page</legend>
+            <p style="color:var(--clr-text-muted);margin:0 0 12px;font-size:0.875rem;">
+                Controls the homepage carousel and category product rows.
+            </p>
+            <div class="form-group">
+                <label for="hero_products">Hero products</label>
+                <input type="number" id="hero_products" name="hero_products"
+                       value="{{ config.get('hero_products', 5) }}" min="1" max="100" />
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+                <label for="category_products">Category products</label>
+                <input type="number" id="category_products" name="category_products"
+                       value="{{ config.get('category_products', 8) }}" min="1" max="100" />
+            </div>
+        </fieldset>
+
+        <div class="form-group">
+            <label for="products_per_page">Products per page (catalog)</label>
+            <input type="number" id="products_per_page" name="products_per_page"
+                   value="{{ config.get('products_per_page', 12) }}" min="1" max="100" />
+            <p style="color:var(--clr-text-muted);margin:8px 0 0;font-size:0.875rem;">
+                Used on /products and category listing pages, not the homepage.
+            </p>
+        </div>
+
+        <div class="form-group">
+            <label>
+                <input type="checkbox" name="show_category_nav"
+                       {% if config.get('show_category_nav', True) %}checked{% endif %} />
+                Show category navigation
+            </label>
+        </div>
+
+        <button type="submit" class="btn btn--primary">Save</button>
+        <a href="/admin/frontends" class="btn btn--secondary">Back to Frontends</a>
+    </form>
+</div>
+{% endblock %}
