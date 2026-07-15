@@ -1,0 +1,1 @@
+import{u as e}from"./DMWt2lfh.js";function t(t,n){throw new e(t,n)}export{t};

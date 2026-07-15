@@ -7,7 +7,7 @@ node_modules
 .wrangler
 .svelte-kit
 /build
-/dist/
+# dist/ is committed so GitHub source archives are installable via Admin
 
 # OS
 .DS_Store

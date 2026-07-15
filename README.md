@@ -2,26 +2,76 @@
 
 SvelteKit reference storefront for Oshkelosh: catalog, auth, cart, checkout, orders, and SSO callback integration.
 
+This package is both a **developer example** and a **production-ready** frontend. The GitHub source archive on `main` is installable via Admin → Install addon (no separate release artifact).
+
 ## Overview
 
 | | |
 |---|---|
 | Addon ID | `default` |
-| Category | frontend |
+| Category | frontend (on-disk folder: `frontends/`) |
 | Version | 1.0.0 |
 | Category guide | [../README.md](../README.md) |
 | Source | `source/` (SvelteKit 2 + Svelte 5) |
-| Build output | `dist/` (served at `/`) |
+| Build output | `dist/` (committed; served at `/`) |
+| Manifest | `oshkelosh-addon.json` |
 
 Only **one** frontend addon is active at a time. API routes stay at `/api/v1/*` on the same host.
 
-## Enable and configure
+## Production install
 
-1. Build the SPA: `cd source && npm install && npm run build`
-2. Restart Oshkelosh (new addon packages are discovered at startup)
-3. Enable **Default Storefront** under **Admin → Addons**
-4. Configure layout options at `/admin/frontends/default`
-5. Set site branding at `/admin/settings`
+From an Oshkelosh admin session (**Dashboard → Install addon**), use the GitHub source archive URL:
+
+```
+https://github.com/Oshkelosh/default_frontend/archive/refs/heads/main.zip
+```
+
+The archive includes `oshkelosh-addon.json`, the Python addon package, and a prebuilt `dist/`. After install:
+
+1. Restart Oshkelosh (or rely on the addon-restart watcher)
+2. Enable **Default Storefront** under **Admin → Addons**
+3. Configure layout options at `/admin/frontends/default`
+4. Set site branding at `/admin/settings`
+
+## Local development
+
+Clone into the host category path:
+
+```bash
+git clone git@github.com:Oshkelosh/default_frontend.git app/addons/frontends/default
+```
+
+### Prerequisites
+
+- Oshkelosh backend at `http://127.0.0.1:8000` (`./scripts/run_dev.sh`)
+- Node.js 18+
+
+```bash
+cd source
+npm install
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173). Add to backend `.env` if CORS fails:
+
+```
+CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,http://localhost:8000
+```
+
+### Releasing SPA changes
+
+Because the raw `main` archive is the distribution channel, commit an updated `dist/` whenever you ship storefront changes:
+
+```bash
+cd source
+npm install
+npm run build   # writes ../dist/
+git add ../dist ../oshkelosh-addon.json
+git commit -m "Rebuild storefront dist for ZIP install"
+git push origin main
+```
+
+Keep ignoring `node_modules/` and `.svelte-kit/`; do **not** gitignore `dist/`.
 
 ## Configuration schema
 
@@ -85,34 +135,6 @@ Backend calls live in `source/src/lib/api/`:
 
 In development (`npm run dev`), requests target `http://127.0.0.1:8000`. In production they are same-origin.
 
-## Quick start (development)
-
-### Prerequisites
-
-- Oshkelosh backend at `http://127.0.0.1:8000` (`./scripts/run_dev.sh`)
-- Node.js 18+
-
-```bash
-cd source
-npm install
-npm run dev
-```
-
-Open [http://localhost:5173](http://localhost:5173). Add to backend `.env` if CORS fails:
-
-```
-CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,http://localhost:8000
-```
-
-### Production build
-
-```bash
-cd source
-npm run build
-```
-
-Output goes to `../dist/`. Reload `http://localhost:8000/` after building.
-
 ## Configuration layers
 
 | What | Admin UI | SPA usage |
@@ -135,10 +157,10 @@ Run `npm run check` from `source/` for type-checking.
 ## Creating a new frontend from this sample
 
 1. Copy `default/` to `app/addons/frontends/my_theme/`
-2. Rename `addon_id`, names, and config in `addon.py` and `routes.py`
+2. Rename `addon_id`, names, and config in `addon.py`, `routes.py`, and `oshkelosh-addon.json`
 3. Update `source/svelte.config.js` adapter paths to `../dist`
 4. Customize `source/src/` — keep the storefront bootstrap unless replacing it intentionally
-5. Build, restart server, enable in admin
+5. Build (`npm run build`), commit `dist/`, restart server, enable in admin
 
 Any framework works as long as you produce a `dist/` with `index.html` and follow the [bootstrap contract](../README.md#spa-bootstrap-contract-required).
 
@@ -146,13 +168,15 @@ Any framework works as long as you produce a `dist/` with `index.html` and follo
 
 ```
 default/
+├── oshkelosh-addon.json   # required for ZIP / GitHub archive install
 ├── README.md
+├── __init__.py
 ├── addon.py
 ├── routes.py
 ├── templates/
-├── dist/               # built SPA (generated)
-└── source/             # SvelteKit project
-    ├── README.md       # dev commands
+├── dist/                  # built SPA (committed for production install)
+└── source/                # SvelteKit project
+    ├── README.md          # dev commands
     └── src/
         ├── routes/
         └── lib/
