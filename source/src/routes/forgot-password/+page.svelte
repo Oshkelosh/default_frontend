@@ -12,6 +12,8 @@
 	let loading = $state(false);
 	let submitted = $state(false);
 
+	const resetFailed = $derived(data.auth === 'reset_failed');
+
 	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
 		error = null;
@@ -39,6 +41,12 @@
 		<p><a href={resolve('/login')}>Back to sign in</a></p>
 	</div>
 {:else}
+	{#if resetFailed}
+		<div class="auth-banner auth-banner--error" role="alert">
+			That password reset link is invalid or has expired. Request a new one below.
+		</div>
+	{/if}
+
 	<AuthForm title="Forgot password" submitLabel="Send reset link" {error} {loading} onsubmit={handleSubmit}>
 		<label>
 			<span class="field-label">Email</span>
@@ -50,6 +58,21 @@
 {/if}
 
 <style>
+	.auth-banner {
+		max-width: 420px;
+		margin: 0 auto 1rem;
+		padding: 0.75rem 1rem;
+		border-radius: var(--radius);
+		font-size: 0.875rem;
+		text-align: center;
+	}
+
+	.auth-banner--error {
+		background: oklch(0.95 0.04 25);
+		border: 1px solid oklch(0.85 0.08 25);
+		color: oklch(0.35 0.08 25);
+	}
+
 	.field-label {
 		display: block;
 		font-size: 0.875rem;

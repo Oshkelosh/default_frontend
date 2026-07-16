@@ -1,1 +1,0 @@
-import{l as e,t}from"./DMWt2lfh.js";import{r as n}from"./DOQgNS6W.js";import"./DeWDOl6k.js";import{t as r}from"./DLnOXlf7.js";function i(i){if(r.user||n())return;let a=i??window.location.pathname+window.location.search,o=new URLSearchParams;a&&a!==`/account`&&o.set(`returnTo`,a);let s=o.toString();t(e(`/account`)+(s?`?${s}`:``))}export{i as t};

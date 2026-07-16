@@ -109,6 +109,16 @@ Frontend-specific options only — site branding comes from Site Settings.
 | `/orders`, `/orders/[id]` | Order history and detail (`?payment=return` after hosted checkout) |
 | `/auth/sso/callback` | SSO token exchange |
 
+Backend email deep-links are handled by the API before the SPA loads:
+
+| Link | Backend behavior | SPA lands on |
+|------|------------------|--------------|
+| `/verify-email?token=` | Verifies token, then 302 | `/login?auth=verified` or `/login?auth=verify_failed` |
+| `/reset-password?token=` (valid) | Serves SPA shell (token kept) | Same URL — form posts to API |
+| `/reset-password?token=` (invalid) | 302 | `/forgot-password?auth=reset_failed` |
+
+Login also shows banners for `?auth=password_reset` (after a successful reset) and `?error=sso_failed` (SSO failure).
+
 ## Core integration
 
 On startup the SPA:

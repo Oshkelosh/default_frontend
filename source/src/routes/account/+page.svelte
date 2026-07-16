@@ -2,21 +2,40 @@
 	import { resolve } from '$app/paths';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
+	import AddressForm from '$lib/components/AddressForm.svelte';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import { authState, login, logout, register } from '$lib/auth/session.svelte';
+	import { ApiError } from '$lib/types';
+	import type { ShippingAddress } from '$lib/types';
+	import { emptyAddress } from '$lib/utils/address';
 	import { absoluteUrl } from '$lib/utils/seo';
 
 	let { data } = $props();
 
 	const site = $derived(data.config.site);
 	const returnTo = $derived(page.url.searchParams.get('returnTo') ?? '/');
+	const emailVerificationEnabled = $derived(data.config.auth?.email_verification_enabled ?? false);
 
 	let mode = $state<'login' | 'register'>('login');
 	let email = $state('');
 	let password = $state('');
-	let fullName = $state('');
+	let shippingAddress = $state(emptyAddress());
+	let billingAddress = $state(emptyAddress());
+	let billingSameAsShipping = $state(true);
 	let error = $state<string | null>(null);
 	let submitting = $state(false);
+
+	function addressPayload(address: ShippingAddress) {
+		return {
+			full_name: address.full_name?.trim() || null,
+			line1: address.line1?.trim() ?? '',
+			line2: address.line2?.trim() || null,
+			city: address.city?.trim() ?? '',
+			state: address.state?.trim() || null,
+			postal_code: address.postal_code?.trim() ?? '',
+			country: address.country?.trim() ?? ''
+		};
+	}
 
 	async function handleLogin(event: SubmitEvent) {
 		event.preventDefault();
@@ -40,11 +59,16 @@
 			await register({
 				email,
 				password,
-				full_name: fullName.trim() || null
+				full_name: shippingAddress.full_name?.trim() || null,
+				default_shipping_address: addressPayload(shippingAddress),
+				billing_same_as_shipping: billingSameAsShipping,
+				...(billingSameAsShipping
+					? {}
+					: { default_billing_address: addressPayload(billingAddress) })
 			});
 			await goto(returnTo.startsWith('/') ? returnTo : resolve('/'));
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Registration failed';
+			error = err instanceof ApiError ? err.message : 'Registration failed';
 		} finally {
 			submitting = false;
 		}
@@ -63,6 +87,12 @@
 </div>
 
 {#if authState.user}
+	{#if emailVerificationEnabled && !authState.user.verified}
+		<div class="verify-banner" role="status">
+			Please verify your email. We sent a link to <strong>{authState.user.email}</strong>.
+		</div>
+	{/if}
+
 	<div class="auth-panel">
 		<p>Signed in as <strong>{authState.user.email}</strong></p>
 		{#if authState.user.full_name}
@@ -123,10 +153,6 @@
 		{:else}
 			<form class="auth-form" onsubmit={handleRegister}>
 				<label>
-					Full name
-					<input type="text" bind:value={fullName} autocomplete="name" />
-				</label>
-				<label>
 					Email
 					<input type="email" bind:value={email} required autocomplete="email" />
 				</label>
@@ -140,6 +166,18 @@
 						autocomplete="new-password"
 					/>
 				</label>
+
+				<AddressForm bind:address={shippingAddress} title="Shipping address" required />
+
+				<label class="checkbox-label">
+					<input type="checkbox" bind:checked={billingSameAsShipping} />
+					<span>Billing address same as shipping</span>
+				</label>
+
+				{#if !billingSameAsShipping}
+					<AddressForm bind:address={billingAddress} title="Billing address" required />
+				{/if}
+
 				<button type="submit" class="btn btn--primary" disabled={submitting}>
 					{submitting ? 'Creating account…' : 'Create account'}
 				</button>
@@ -151,3 +189,24 @@
 		{/if}
 	</div>
 {/if}
+
+<style>
+	.verify-banner {
+		background: oklch(0.95 0.04 85);
+		border: 1px solid oklch(0.85 0.08 85);
+		color: oklch(0.35 0.06 85);
+		padding: 0.75rem 1rem;
+		border-radius: var(--radius);
+		margin-bottom: 1rem;
+		font-size: 0.875rem;
+		line-height: 1.5;
+	}
+
+	.checkbox-label {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.875rem;
+		cursor: pointer;
+	}
+</style>

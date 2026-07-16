@@ -50,6 +50,7 @@ export interface SsoProvider {
 
 export interface AuthConfig {
 	sso_providers: SsoProvider[];
+	email_verification_enabled?: boolean;
 }
 
 export interface ProductImage {
@@ -144,6 +145,7 @@ export interface User {
 	full_name?: string | null;
 	phone?: string | null;
 	default_shipping_address?: ShippingAddress | null;
+	default_billing_address?: ShippingAddress | null;
 	banned: boolean;
 	verified: boolean;
 	verified_at?: string | null;
@@ -155,15 +157,16 @@ export interface User {
 }
 
 export interface ShippingAddress {
+	full_name?: string | null;
 	name?: string;
 	line1?: string;
-	line2?: string;
+	line2?: string | null;
 	city?: string;
-	state?: string;
+	state?: string | null;
 	postal_code?: string;
 	country?: string;
-	email?: string;
-	phone?: string;
+	email?: string | null;
+	phone?: string | null;
 	[key: string]: unknown;
 }
 
@@ -171,6 +174,7 @@ export interface UserProfileUpdate {
 	full_name?: string | null;
 	phone?: string | null;
 	default_shipping_address?: ShippingAddress | null;
+	default_billing_address?: ShippingAddress | null;
 	password?: string;
 	push_token?: string | null;
 	push_provider?: string | null;
@@ -194,10 +198,18 @@ export interface Token {
 	token_type?: string;
 }
 
+export interface RegisterResponse extends Token {
+	user: User;
+}
+
 export interface UserRegister {
 	email: string;
 	password: string;
 	full_name?: string | null;
+	phone?: string | null;
+	default_shipping_address: ShippingAddress;
+	default_billing_address?: ShippingAddress | null;
+	billing_same_as_shipping?: boolean;
 }
 
 export interface UserLogin {

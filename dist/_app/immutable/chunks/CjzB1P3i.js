@@ -1,0 +1,1 @@
+function e(){return{full_name:``,line1:``,line2:``,city:``,state:``,postal_code:``,country:``}}function t(e){return e?[`full_name`,`name`,`line1`,`line2`,`city`,`state`,`postal_code`,`country`,`email`,`phone`].map(t=>e[t]).filter(e=>typeof e==`string`&&e.trim().length>0):[]}export{t as n,e as t};

@@ -1,5 +1,12 @@
 import { apiFetch, clearTokens, setTokens } from '$lib/api/client';
-import type { Token, User, UserLogin, UserProfileUpdate, UserRegister } from '$lib/types';
+import type {
+	RegisterResponse,
+	Token,
+	User,
+	UserLogin,
+	UserProfileUpdate,
+	UserRegister
+} from '$lib/types';
 
 export async function login(credentials: UserLogin): Promise<Token> {
 	const token = await apiFetch<Token>('/api/v1/auth/login', {
@@ -11,16 +18,17 @@ export async function login(credentials: UserLogin): Promise<Token> {
 }
 
 export async function register(payload: UserRegister): Promise<User> {
-	return apiFetch<User>('/api/v1/auth/register', {
+	const result = await apiFetch<RegisterResponse>('/api/v1/auth/register', {
 		method: 'POST',
 		body: JSON.stringify(payload)
 	});
+	setTokens(result.access_token, result.refresh_token);
+	return result.user;
 }
 
+/** @deprecated Prefer `register` — tokens are returned and stored already. */
 export async function registerAndLogin(payload: UserRegister): Promise<User> {
-	const user = await register(payload);
-	await login({ email: payload.email, password: payload.password });
-	return user;
+	return register(payload);
 }
 
 export async function getProfile(): Promise<User> {
@@ -49,6 +57,13 @@ export async function verifyEmail(token: string): Promise<{ message: string }> {
 	return apiFetch<{ message: string }>('/api/v1/auth/verify-email', {
 		method: 'POST',
 		body: JSON.stringify({ token })
+	});
+}
+
+export async function resendVerification(): Promise<{ message: string }> {
+	return apiFetch<{ message: string }>('/api/v1/auth/resend-verification', {
+		method: 'POST',
+		auth: true
 	});
 }
 

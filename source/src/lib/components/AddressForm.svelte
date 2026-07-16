@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { ShippingAddress } from '$lib/types';
+	import { ISO_COUNTRIES, normalizeCountryCode } from '$lib/utils/countries';
 
 	let {
 		address = $bindable(),
@@ -10,6 +11,15 @@
 		title?: string;
 		required?: boolean;
 	} = $props();
+
+	$effect(() => {
+		const country = address.country;
+		if (!country) return;
+		const normalized = normalizeCountryCode(country);
+		if (normalized && normalized !== country) {
+			address.country = normalized;
+		}
+	});
 </script>
 
 <fieldset class="address-form">
@@ -17,7 +27,7 @@
 
 	<label>
 		<span class="field-label">Full name</span>
-		<input type="text" bind:value={address.name} autocomplete="name" {required} />
+		<input type="text" bind:value={address.full_name} autocomplete="name" {required} />
 	</label>
 	<label>
 		<span class="field-label">Address line 1</span>
@@ -44,7 +54,14 @@
 		</label>
 		<label>
 			<span class="field-label">Country</span>
-			<input type="text" bind:value={address.country} autocomplete="country-name" {required} />
+			<select bind:value={address.country} autocomplete="country" {required}>
+				<option value="" disabled={required}>
+					Select country
+				</option>
+				{#each ISO_COUNTRIES as country (country.code)}
+					<option value={country.code}>{country.name} ({country.code})</option>
+				{/each}
+			</select>
 		</label>
 	</div>
 </fieldset>
@@ -72,13 +89,15 @@
 		margin-bottom: 0.375rem;
 	}
 
-	label input {
+	label input,
+	label select {
 		width: 100%;
 		padding: 0.625rem 0.875rem;
 		border: 1px solid var(--clr-border);
 		border-radius: var(--radius);
 		font: inherit;
 		box-sizing: border-box;
+		background: var(--clr-bg, #fff);
 	}
 
 	.address-form__row {

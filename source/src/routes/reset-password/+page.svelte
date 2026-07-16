@@ -31,7 +31,7 @@
 
 		try {
 			await resetPassword(data.token, password);
-			await goto(resolve('/login'));
+			await goto(`${resolve('/login')}?auth=password_reset`);
 		} catch (err) {
 			error = err instanceof ApiError ? err.message : 'Reset failed. The link may have expired.';
 		} finally {
