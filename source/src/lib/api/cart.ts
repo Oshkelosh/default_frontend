@@ -1,5 +1,5 @@
 import { apiFetch } from '$lib/api/client';
-import type { Cart, CartItemWithPrice } from '$lib/types';
+import type { Cart, CartItemWithPrice, CartQuote, ShippingAddress } from '$lib/types';
 
 export async function getCart(): Promise<Cart> {
 	const data = await apiFetch<Cart & { items?: CartItemWithPrice[] }>('/api/v1/cart', {
@@ -9,6 +9,14 @@ export async function getCart(): Promise<Cart> {
 		...data,
 		items: data.items ?? []
 	};
+}
+
+export async function quoteCart(shippingAddress?: ShippingAddress | null): Promise<CartQuote> {
+	return apiFetch<CartQuote>('/api/v1/cart/quote', {
+		method: 'POST',
+		auth: true,
+		body: JSON.stringify({ shipping_address: shippingAddress ?? null })
+	});
 }
 
 export async function addCartItem(productId: number, variantId: number, quantity = 1): Promise<void> {

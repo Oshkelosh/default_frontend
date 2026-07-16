@@ -228,6 +228,11 @@ export async function mergeGuestCartIntoServer(): Promise<void> {
 	cartState.serverCart = await cartApi.getCart();
 }
 
+export async function refreshServerCart(): Promise<void> {
+	if (cartState.mode !== 'server') return;
+	cartState.serverCart = await cartApi.getCart();
+}
+
 export function resetCart(): void {
 	cartState.mode = 'guest';
 	cartState.serverCart = null;

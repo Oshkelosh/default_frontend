@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import { invalidateAll } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import ErrorState from '$lib/components/ErrorState.svelte';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import OrderStatusBadge from '$lib/components/OrderStatusBadge.svelte';
 	import OrderSummary from '$lib/components/OrderSummary.svelte';
-	import { cancelOrder } from '$lib/api/orders';
+	import { cancelOrder, checkoutOrder } from '$lib/api/orders';
 	import { formatAddressLines } from '$lib/utils/address';
 	import { ApiError } from '$lib/types';
 
@@ -13,8 +13,11 @@
 
 	let cancelling = $state(false);
 	let cancelError = $state<string | null>(null);
+	let paying = $state(false);
+	let payError = $state<string | null>(null);
 
 	const canCancel = $derived(data.order?.status === 'pending');
+	const canPay = $derived(data.order?.status === 'pending');
 	const shippingLines = $derived(formatAddressLines(data.order?.shipping_address));
 	const billingLines = $derived(formatAddressLines(data.order?.billing_address));
 
@@ -37,6 +40,32 @@
 
 		return () => window.clearInterval(timer);
 	});
+
+	async function handlePayNow() {
+		if (!data.order) return;
+		paying = true;
+		payError = null;
+
+		try {
+			const session = await checkoutOrder(data.order.id);
+			if (session.note) {
+				// Mock session (payment processor not configured); its URL is not real.
+				const orderPath = resolve('/orders/[id]', { id: String(data.order.id) });
+				await goto(`${orderPath}?checkout=mock`, { invalidateAll: true });
+				paying = false;
+				return;
+			}
+			if (session.url) {
+				window.location.href = session.url;
+				return;
+			}
+			await invalidateAll();
+			paying = false;
+		} catch (err) {
+			payError = err instanceof ApiError ? err.message : 'Could not start payment.';
+			paying = false;
+		}
+	}
 
 	async function handleCancel() {
 		if (!data.order) return;
@@ -106,11 +135,24 @@
 			</section>
 		{/if}
 
+		{#if payError}
+			<div class="order-detail__error" role="alert">{payError}</div>
+		{/if}
 		{#if cancelError}
 			<div class="order-detail__error" role="alert">{cancelError}</div>
 		{/if}
 
 		<div class="order-detail__actions">
+			{#if canPay}
+				<button
+					type="button"
+					class="btn btn--primary"
+					disabled={paying || cancelling}
+					onclick={handlePayNow}
+				>
+					{paying ? 'Starting payment…' : 'Pay now'}
+				</button>
+			{/if}
 			{#if canCancel}
 				<button type="button" class="btn btn--secondary" disabled={cancelling} onclick={handleCancel}>
 					{cancelling ? 'Cancelling…' : 'Cancel order'}

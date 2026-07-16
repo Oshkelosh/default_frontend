@@ -1,0 +1,1 @@
+import{C as e,E as t,I as n,V as r,nt as i,w as a}from"./D--mGd1Z.js";import"./xihTtKlq.js";var o=t(`<span class="order-status svelte-22b07b"> </span>`);function s(t,s){var c=o(),l=r(c,!0);i(c),n(()=>e(l,s.status)),a(t,c)}export{s as t};

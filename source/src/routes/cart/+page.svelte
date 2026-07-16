@@ -139,7 +139,7 @@
 		{:else}
 			<div class="cart-banner">
 				Sign in or create an account to checkout.
-				<a href={resolve('/account') + '?returnTo=/checkout'}>Go to account</a>
+				<a href={resolve('/login') + '?redirect=/checkout'}>Sign in</a>
 			</div>
 		{/if}
 

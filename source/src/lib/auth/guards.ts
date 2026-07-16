@@ -10,9 +10,9 @@ export function requireAuth(returnTo?: string): void {
 
 	const target = returnTo ?? window.location.pathname + window.location.search;
 	const params = new URLSearchParams();
-	if (target && target !== '/account') {
-		params.set('returnTo', target);
+	if (target && target !== '/') {
+		params.set('redirect', target);
 	}
 	const query = params.toString();
-	goto(resolve('/account') + (query ? `?${query}` : ''));
+	goto(resolve('/login') + (query ? `?${query}` : ''));
 }

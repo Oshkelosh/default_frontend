@@ -278,6 +278,14 @@ export interface Order {
 	updated_at: string;
 }
 
+export interface CartQuote {
+	subtotal_cents: number;
+	tax_cents: number;
+	shipping_cents: number;
+	tax_source: string;
+	shipping_breakdown: Array<Record<string, unknown>>;
+}
+
 export interface CheckoutSession {
 	success?: boolean;
 	session_id?: string;
