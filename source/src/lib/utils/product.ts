@@ -1,5 +1,6 @@
 import { apiUrl } from '$lib/api/config';
 import type { Product, ProductImage } from '$lib/types';
+import { formatCents } from '$lib/utils/money';
 
 export type ResolvedProductImage = {
 	url: string;
@@ -10,17 +11,17 @@ export type ResolvedProductImage = {
 export function formatPrice(product: Product): string {
 	const amount =
 		product.price != null && product.price !== ''
-			? `$${product.price}`
-			: `$${(product.price_cents / 100).toFixed(2)}`;
+			? formatCents(Math.round(Number(product.price) * 100))
+			: formatCents(product.price_cents);
 	return product.has_variants ? `From ${amount}` : amount;
 }
 
 export function formatComparePrice(product: Product): string | null {
 	if (product.compare_at_price) {
-		return `$${product.compare_at_price}`;
+		return formatCents(Math.round(Number(product.compare_at_price) * 100));
 	}
 	if (product.compare_at_price_cents != null) {
-		return `$${(product.compare_at_price_cents / 100).toFixed(2)}`;
+		return formatCents(product.compare_at_price_cents);
 	}
 	return null;
 }

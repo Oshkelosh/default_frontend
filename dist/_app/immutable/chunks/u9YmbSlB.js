@@ -1,1 +1,0 @@
-import{l as e,t}from"./DIuk_LxY.js";import{r as n}from"./DOQgNS6W.js";import"./bMei-f2_.js";import{t as r}from"./BuZUq2zw.js";function i(i){if(r.user||n())return;let a=i??window.location.pathname+window.location.search,o=new URLSearchParams;a&&a!==`/`&&o.set(`redirect`,a);let s=o.toString();t(e(`/login`)+(s?`?${s}`:``))}export{i as t};

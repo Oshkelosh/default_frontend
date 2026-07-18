@@ -1,5 +1,11 @@
 import { apiFetch } from '$lib/api/client';
-import type { Cart, CartItemWithPrice, CartQuote, ShippingAddress } from '$lib/types';
+import type {
+	Cart,
+	CartItemShippingEstimate,
+	CartItemWithPrice,
+	CartQuote,
+	ShippingAddress
+} from '$lib/types';
 
 export async function getCart(): Promise<Cart> {
 	const data = await apiFetch<Cart & { items?: CartItemWithPrice[] }>('/api/v1/cart', {
@@ -11,11 +17,24 @@ export async function getCart(): Promise<Cart> {
 	};
 }
 
-export async function quoteCart(shippingAddress?: ShippingAddress | null): Promise<CartQuote> {
+export async function quoteCart(
+	shippingAddress?: ShippingAddress | null,
+	shippingSelections?: Record<string, string> | null
+): Promise<CartQuote> {
 	return apiFetch<CartQuote>('/api/v1/cart/quote', {
 		method: 'POST',
 		auth: true,
-		body: JSON.stringify({ shipping_address: shippingAddress ?? null })
+		body: JSON.stringify({
+			shipping_address: shippingAddress ?? null,
+			shipping_selections: shippingSelections ?? null
+		})
+	});
+}
+
+export async function quoteCartItemShipping(itemId: number): Promise<CartItemShippingEstimate> {
+	return apiFetch<CartItemShippingEstimate>(`/api/v1/cart/items/${itemId}/shipping-estimate`, {
+		method: 'POST',
+		auth: true
 	});
 }
 

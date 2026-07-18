@@ -19,6 +19,8 @@
 	title={`Products | ${site.store_name}`}
 	description={site.meta_description}
 	canonical={absoluteUrl(site, '/products')}
+	siteName={site.store_name}
+	ogImage={site.logo_url}
 />
 
 <div class="page-header">

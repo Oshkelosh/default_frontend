@@ -90,7 +90,8 @@
 		canonical={canonical}
 		ogImage={imageUrl}
 		ogType="product"
-		jsonLd={[productJsonLd(product, site), ...(breadcrumbs ? [breadcrumbs] : [])]}
+		siteName={site.store_name}
+		jsonLd={[productJsonLd(product, site, imageUrl), ...(breadcrumbs ? [breadcrumbs] : [])]}
 	/>
 {/if}
 

@@ -180,7 +180,7 @@
 	}
 </script>
 
-<SeoHead title={`Account | ${site.store_name}`} canonical={absoluteUrl(site, '/account')} />
+<SeoHead title={`Account | ${site.store_name}`} canonical={absoluteUrl(site, '/account')} robots="noindex, nofollow" />
 
 <div class="page-header">
 	<h1>Account</h1>

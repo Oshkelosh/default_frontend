@@ -10,8 +10,9 @@
 		showItems?: boolean;
 	} = $props();
 
+	const currency = $derived(order.currency || undefined);
 	const total = $derived(
-		order.total ?? formatCents(order.total_cents ?? 0)
+		order.total ?? formatCents(order.total_cents ?? 0, currency)
 	);
 </script>
 
@@ -24,7 +25,7 @@
 		<ul class="order-summary__items">
 			{#each order.items as item (item.id)}
 				<li>
-					{item.product_name} × {item.quantity} — {formatCents(item.total_price_cents)}
+					{item.product_name} × {item.quantity} — {formatCents(item.total_price_cents, currency)}
 				</li>
 			{/each}
 		</ul>

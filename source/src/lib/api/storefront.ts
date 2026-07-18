@@ -11,7 +11,8 @@ const DEFAULT_SITE: SiteSettings = {
 	secondary_color: '#64748b',
 	font_family: 'system-ui, sans-serif',
 	meta_description: 'Shop our curated collection',
-	site_url: null
+	site_url: null,
+	shop_currency: 'USD'
 };
 
 const DEFAULT_FRONTEND: ActiveFrontendInfo = {

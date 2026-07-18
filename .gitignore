@@ -27,6 +27,13 @@ vite.config.ts.timestamp-*
 __pycache__/
 *.py[cod]
 *$py.class
+*.egg-info/
+
+# Testing & tooling
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
 # Editor
 .vscode/
+.idea/

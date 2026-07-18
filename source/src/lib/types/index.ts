@@ -8,6 +8,8 @@ export interface SiteSettings {
 	support_email?: string | null;
 	meta_description?: string | null;
 	site_url?: string | null;
+	shop_currency?: string;
+	preferred_currency?: string | null;
 }
 
 export interface FrontendConfig {
@@ -186,6 +188,7 @@ export interface OrderCreatePayload {
 	billing_address?: ShippingAddress | null;
 	notes?: string | null;
 	currency?: string;
+	shipping_selections?: Record<string, string> | null;
 }
 
 export interface OrderCheckoutPayload {
@@ -279,12 +282,42 @@ export interface Order {
 	updated_at: string;
 }
 
+export interface ShippingRateOption {
+	id: string;
+	name: string;
+	cents: number;
+	min_delivery_days?: number | null;
+	max_delivery_days?: number | null;
+}
+
+export interface ShippingBreakdownItem {
+	source: string;
+	fulfillment_key: string;
+	cents: number;
+	label: string;
+	cart_item_ids: number[];
+	addon_id?: string | null;
+	subtotal_cents?: number | null;
+	options?: ShippingRateOption[];
+	selected_id?: string | null;
+}
+
 export interface CartQuote {
 	subtotal_cents: number;
 	tax_cents: number;
 	shipping_cents: number;
 	tax_source: string;
-	shipping_breakdown: Array<Record<string, unknown>>;
+	currency?: string;
+	preferred_currency?: string | null;
+	shipping_breakdown: ShippingBreakdownItem[];
+}
+
+export interface CartItemShippingEstimate {
+	cart_item_id: number;
+	shipping_cents: number;
+	currency?: string;
+	label: string;
+	source: string;
 }
 
 export interface CheckoutSession {
@@ -295,11 +328,6 @@ export interface CheckoutSession {
 	amount?: number;
 	currency?: string;
 	note?: string;
-}
-
-export interface CartLine {
-	item: CartItemWithPrice;
-	product: Product | null;
 }
 
 export class ApiError extends Error {

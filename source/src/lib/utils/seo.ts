@@ -1,6 +1,5 @@
 import type { Product, ProductDetail, ProductVariant, SiteSettings } from '$lib/types';
-
-const DEFAULT_CURRENCY = 'USD';
+import { DEFAULT_CURRENCY } from '$lib/utils/money';
 
 export function absoluteUrl(site: SiteSettings, path: string): string {
 	const base = site.site_url?.replace(/\/$/, '') ?? '';
@@ -14,6 +13,19 @@ export function truncateText(value: string | null | undefined, maxLength: number
 	if (!trimmed) return null;
 	if (trimmed.length <= maxLength) return trimmed;
 	return `${trimmed.slice(0, maxLength - 1).trimEnd()}…`;
+}
+
+export function organizationJsonLd(site: SiteSettings): Record<string, unknown> {
+	const payload: Record<string, unknown> = {
+		'@context': 'https://schema.org',
+		'@type': 'Organization',
+		name: site.store_name,
+		url: absoluteUrl(site, '/')
+	};
+	if (site.logo_url) {
+		payload.logo = site.logo_url;
+	}
+	return payload;
 }
 
 export function breadcrumbJsonLd(items: Array<{ name: string; url: string }>): Record<string, unknown> {
@@ -74,7 +86,7 @@ export function buildProductOffersJsonLd(
 			'@type': 'AggregateOffer',
 			lowPrice: formatPriceCents(Math.min(...prices)),
 			highPrice: formatPriceCents(Math.max(...prices)),
-			priceCurrency: DEFAULT_CURRENCY,
+			priceCurrency: site.shop_currency || DEFAULT_CURRENCY,
 			offerCount: active.length,
 			availability: availabilityUrl(inStock),
 			url: productUrl
@@ -86,18 +98,23 @@ export function buildProductOffersJsonLd(
 	const inventory = variant?.inventory_quantity ?? product.inventory_quantity;
 	return {
 		'@type': 'Offer',
-		priceCurrency: DEFAULT_CURRENCY,
+		priceCurrency: site.shop_currency || DEFAULT_CURRENCY,
 		price: formatPriceCents(priceCents),
 		availability: availabilityUrl(inventory > 0),
 		url: productUrl
 	};
 }
 
-export function productJsonLd(product: ProductDetail, site: SiteSettings): Record<string, unknown> {
+export function productJsonLd(
+	product: ProductDetail,
+	site: SiteSettings,
+	imageUrl?: string | null
+): Record<string, unknown> {
 	const active = activeVariants(product.variants);
 	const sku = active.length === 1 && active[0].sku ? active[0].sku : product.sku ?? undefined;
+	const image = imageUrl ?? sharedPrimaryImageUrl(product);
 
-	return {
+	const payload: Record<string, unknown> = {
 		'@context': 'https://schema.org',
 		'@type': 'Product',
 		name: product.name,
@@ -106,6 +123,10 @@ export function productJsonLd(product: ProductDetail, site: SiteSettings): Recor
 		offers: buildProductOffersJsonLd(product, site, product.variants),
 		url: absoluteUrl(site, `/products/${product.slug ?? product.id}`)
 	};
+	if (image) {
+		payload.image = [image];
+	}
+	return payload;
 }
 
 export function sharedPrimaryImageUrl(product: Product): string | null {

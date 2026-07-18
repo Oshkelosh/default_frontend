@@ -25,6 +25,8 @@
 		title={category.meta_title || `${category.name} | ${site.store_name}`}
 		description={category.meta_description || truncateText(category.description, 160) || site.meta_description}
 		{canonical}
+		siteName={site.store_name}
+		ogImage={site.logo_url}
 		jsonLd={[breadcrumbJsonLd([
 			{ name: 'Home', url: absoluteUrl(site, '/') },
 			{ name: 'Products', url: absoluteUrl(site, '/products') },

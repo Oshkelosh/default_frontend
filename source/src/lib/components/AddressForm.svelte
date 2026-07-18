@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { ShippingAddress } from '$lib/types';
 	import { ISO_COUNTRIES, normalizeCountryCode } from '$lib/utils/countries';
+	import { statesForCountry } from '$lib/utils/states';
 
 	let {
 		address = $bindable(),
@@ -12,12 +13,26 @@
 		required?: boolean;
 	} = $props();
 
+	const stateOptions = $derived(statesForCountry(address.country));
+	const stateRequired = $derived(required && stateOptions.length > 0);
+
 	$effect(() => {
 		const country = address.country;
 		if (!country) return;
 		const normalized = normalizeCountryCode(country);
 		if (normalized && normalized !== country) {
 			address.country = normalized;
+		}
+	});
+
+	$effect(() => {
+		const options = stateOptions;
+		const current = address.state?.trim() ?? '';
+		if (!current) return;
+		if (options.length === 0) return;
+		const valid = options.some((s) => s.code === current);
+		if (!valid) {
+			address.state = '';
 		}
 	});
 </script>
@@ -43,15 +58,11 @@
 			<input type="text" bind:value={address.city} autocomplete="address-level2" {required} />
 		</label>
 		<label>
-			<span class="field-label">State / Province</span>
-			<input type="text" bind:value={address.state} autocomplete="address-level1" />
-		</label>
-	</div>
-	<div class="address-form__row">
-		<label>
 			<span class="field-label">Postal code</span>
 			<input type="text" bind:value={address.postal_code} autocomplete="postal-code" {required} />
 		</label>
+	</div>
+	<div class="address-form__row">
 		<label>
 			<span class="field-label">Country</span>
 			<select bind:value={address.country} autocomplete="country" {required}>
@@ -62,6 +73,23 @@
 					<option value={country.code}>{country.name} ({country.code})</option>
 				{/each}
 			</select>
+		</label>
+		<label>
+			<span class="field-label">State / Province</span>
+			{#if stateOptions.length > 0}
+				<select
+					bind:value={address.state}
+					autocomplete="address-level1"
+					required={stateRequired}
+				>
+					<option value="" disabled={stateRequired}>Select state / province</option>
+					{#each stateOptions as state (state.code)}
+						<option value={state.code}>{state.name} ({state.code})</option>
+					{/each}
+				</select>
+			{:else}
+				<input type="text" bind:value={address.state} autocomplete="address-level1" />
+			{/if}
 		</label>
 	</div>
 </fieldset>

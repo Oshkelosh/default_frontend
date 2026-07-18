@@ -5,7 +5,7 @@
 	import ProductGrid from '$lib/components/ProductGrid.svelte';
 	import EmptyState from '$lib/components/EmptyState.svelte';
 	import ErrorState from '$lib/components/ErrorState.svelte';
-	import { absoluteUrl } from '$lib/utils/seo';
+	import { absoluteUrl, organizationJsonLd } from '$lib/utils/seo';
 	import { invalidateAll } from '$app/navigation';
 
 	let { data } = $props();
@@ -21,6 +21,9 @@
 	title={site.store_name}
 	description={site.meta_description}
 	canonical={absoluteUrl(site, '/')}
+	siteName={site.store_name}
+	ogImage={site.logo_url}
+	jsonLd={[organizationJsonLd(site)]}
 />
 
 {#if data.error}

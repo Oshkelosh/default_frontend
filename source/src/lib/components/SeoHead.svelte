@@ -5,6 +5,7 @@
 		canonical = '',
 		ogImage = null,
 		ogType = 'website',
+		siteName = null,
 		jsonLd = [],
 		robots
 	}: {
@@ -13,6 +14,7 @@
 		canonical?: string | null;
 		ogImage?: string | null;
 		ogType?: string;
+		siteName?: string | null;
 		jsonLd?: Array<Record<string, unknown>>;
 		robots?: string;
 	} = $props();
@@ -41,8 +43,19 @@
 		<meta property="og:url" content={canonical} />
 	{/if}
 	<meta property="og:type" content={ogType} />
+	{#if siteName}
+		<meta property="og:site_name" content={siteName} />
+	{/if}
 	{#if ogImage}
 		<meta property="og:image" content={ogImage} />
+	{/if}
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content={title} />
+	{#if description}
+		<meta name="twitter:description" content={description} />
+	{/if}
+	{#if ogImage}
+		<meta name="twitter:image" content={ogImage} />
 	{/if}
 	{#each jsonLdScripts as schema, index (index)}
 		{@html `<script type="application/ld+json">${JSON.stringify(schema)}</script>`}

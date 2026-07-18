@@ -10,7 +10,7 @@
 	const site = $derived(data.config.site);
 </script>
 
-<SeoHead title={`Orders | ${site.store_name}`} canonical={absoluteUrl(site, '/orders')} />
+<SeoHead title={`Orders | ${site.store_name}`} canonical={absoluteUrl(site, '/orders')} robots="noindex, nofollow" />
 
 <div class="page-header">
 	<h1>Orders</h1>
