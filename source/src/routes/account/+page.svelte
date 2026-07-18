@@ -83,6 +83,7 @@
 	let addressMessage = $state<string | null>(null);
 	let addressError = $state<string | null>(null);
 
+	let currentPassword = $state('');
 	let newPassword = $state('');
 	let confirmPassword = $state('');
 	let passwordSaving = $state(false);
@@ -144,8 +145,12 @@
 		}
 		passwordSaving = true;
 		try {
-			await updateProfile({ password: newPassword });
+			await updateProfile({
+				password: newPassword,
+				...(hasPassword ? { current_password: currentPassword } : {})
+			});
 			await refreshUser();
+			currentPassword = '';
 			newPassword = '';
 			confirmPassword = '';
 			passwordMessage = 'Password updated.';
@@ -276,6 +281,17 @@
 				</p>
 			{/if}
 			<form class="auth-form" onsubmit={savePassword}>
+				{#if hasPassword}
+					<label>
+						Current password
+						<input
+							type="password"
+							bind:value={currentPassword}
+							required
+							autocomplete="current-password"
+						/>
+					</label>
+				{/if}
 				<label>
 					New password
 					<input

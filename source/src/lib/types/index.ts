@@ -176,6 +176,7 @@ export interface UserProfileUpdate {
 	default_shipping_address?: ShippingAddress | null;
 	default_billing_address?: ShippingAddress | null;
 	password?: string;
+	current_password?: string;
 	push_token?: string | null;
 	push_provider?: string | null;
 }
