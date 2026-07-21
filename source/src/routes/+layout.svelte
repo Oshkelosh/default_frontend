@@ -1,10 +1,13 @@
 <script lang="ts">
 	import '../app.css';
+	import { afterNavigate } from '$app/navigation';
 	import { apiUrl } from '$lib/api/config';
 	import Header from '$lib/components/Header.svelte';
 	import Footer from '$lib/components/Footer.svelte';
+	import GdprBanner from '$lib/components/GdprBanner.svelte';
 	import { initSession } from '$lib/auth/session.svelte';
 	import { initCart } from '$lib/cart/cart.svelte';
+	import { syncStorefrontScripts } from '$lib/tools/inject-scripts';
 	import { contrastTextColor } from '$lib/utils/theme';
 
 	const themeCssUrl = apiUrl('/api/v1/storefront/theme.css');
@@ -37,6 +40,10 @@
 			document.documentElement.style.setProperty('--font-sans', site.font_family);
 		}
 	});
+
+	afterNavigate(({ to }) => {
+		syncStorefrontScripts(data.config.tools?.scripts, to?.url.pathname ?? '/');
+	});
 </script>
 
 <svelte:head>
@@ -59,3 +66,4 @@
 </main>
 
 <Footer {site} />
+<GdprBanner {site} />

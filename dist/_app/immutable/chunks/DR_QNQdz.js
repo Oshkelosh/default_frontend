@@ -1,0 +1,1 @@
+function e(e){return!!e.privacy_policy_enabled&&!!e.privacy_policy_body?.trim()}var t=class extends Error{status;constructor(e,t){super(e),this.name=`ApiError`,this.status=t}};export{e as n,t};

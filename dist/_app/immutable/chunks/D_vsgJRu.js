@@ -1,1 +1,0 @@
-import{D as e,H as t,L as n,T as r,rt as i,w as a}from"./CnhXMkm4.js";import"./xihTtKlq.js";var o=e(`<p class="empty-state svelte-13862ru"> </p>`);function s(e,s){var c=o(),l=t(c,!0);i(c),n(()=>a(l,s.message)),r(e,c)}export{s as t};

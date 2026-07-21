@@ -1,15 +1,24 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import type { SiteSettings } from '$lib/types';
+	import { isPrivacyPolicyPublished } from '$lib/types';
 
 	let { site }: { site: SiteSettings } = $props();
+
+	const showPrivacyLink = $derived(isPrivacyPolicyPublished(site));
 </script>
 
 <footer class="shop-footer">
 	<div class="container shop-footer__inner">
 		<p>&copy; {new Date().getFullYear()} {site.store_name}</p>
-		{#if site.support_email}
-			<p><a href="mailto:{site.support_email}">{site.support_email}</a></p>
-		{/if}
+		<div class="shop-footer__links">
+			{#if showPrivacyLink}
+				<a href={resolve('/privacy')}>Privacy policy</a>
+			{/if}
+			{#if site.support_email}
+				<a href="mailto:{site.support_email}">{site.support_email}</a>
+			{/if}
+		</div>
 	</div>
 </footer>
 
@@ -32,6 +41,12 @@
 
 	.shop-footer p {
 		margin: 0;
+	}
+
+	.shop-footer__links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem;
 	}
 
 	.shop-footer a {

@@ -10,6 +10,17 @@ export interface SiteSettings {
 	site_url?: string | null;
 	shop_currency?: string;
 	preferred_currency?: string | null;
+	gdpr_banner_enabled?: boolean;
+	gdpr_banner_text?: string | null;
+	privacy_policy_enabled?: boolean;
+	privacy_policy_title?: string;
+	privacy_policy_body?: string | null;
+	privacy_policy_effective_date?: string | null;
+}
+
+/** True when the built-in /privacy page should be linked and indexed. */
+export function isPrivacyPolicyPublished(site: SiteSettings): boolean {
+	return !!site.privacy_policy_enabled && !!site.privacy_policy_body?.trim();
 }
 
 export interface FrontendConfig {
@@ -32,7 +43,20 @@ export interface StorefrontConfig {
 	frontend: ActiveFrontendInfo;
 	auth?: AuthConfig;
 	notifications?: NotificationsConfig;
+	tools?: ToolsConfig;
 	configUnavailable?: boolean;
+}
+
+export interface StorefrontScript {
+	id: string;
+	src: string;
+	attrs?: Record<string, string | boolean>;
+	routes?: 'all' | 'public' | 'private';
+}
+
+export interface ToolsConfig {
+	scripts: StorefrontScript[];
+	consent_categories?: string[];
 }
 
 export interface PushConfig {

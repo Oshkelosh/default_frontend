@@ -1,9 +1,18 @@
 import { apiFetch } from './client';
-import type { ActiveFrontendInfo, AuthConfig, NotificationsConfig, SiteSettings, StorefrontConfig } from '$lib/types';
+import type {
+	ActiveFrontendInfo,
+	AuthConfig,
+	NotificationsConfig,
+	SiteSettings,
+	StorefrontConfig,
+	ToolsConfig
+} from '$lib/types';
 
 const DEFAULT_AUTH: AuthConfig = { sso_providers: [] };
 
 const DEFAULT_NOTIFICATIONS: NotificationsConfig = { push: null };
+
+const DEFAULT_TOOLS: ToolsConfig = { scripts: [] };
 
 const DEFAULT_SITE: SiteSettings = {
 	store_name: 'Oshkelosh',
@@ -28,6 +37,15 @@ const DEFAULT_FRONTEND: ActiveFrontendInfo = {
 	}
 };
 
+function normalizeTools(tools?: ToolsConfig | null): ToolsConfig {
+	if (!tools) return { ...DEFAULT_TOOLS, scripts: [] };
+	return {
+		...DEFAULT_TOOLS,
+		...tools,
+		scripts: Array.isArray(tools.scripts) ? tools.scripts : []
+	};
+}
+
 export async function getStorefrontConfig(): Promise<StorefrontConfig> {
 	try {
 		const data = await apiFetch<{
@@ -35,6 +53,7 @@ export async function getStorefrontConfig(): Promise<StorefrontConfig> {
 			frontend: ActiveFrontendInfo;
 			auth?: AuthConfig;
 			notifications?: NotificationsConfig;
+			tools?: ToolsConfig;
 		}>('/api/v1/storefront/config');
 		return {
 			site: { ...DEFAULT_SITE, ...data.site },
@@ -44,7 +63,8 @@ export async function getStorefrontConfig(): Promise<StorefrontConfig> {
 				config: { ...DEFAULT_FRONTEND.config, ...data.frontend.config }
 			},
 			auth: data.auth ?? DEFAULT_AUTH,
-			notifications: data.notifications ?? DEFAULT_NOTIFICATIONS
+			notifications: data.notifications ?? DEFAULT_NOTIFICATIONS,
+			tools: normalizeTools(data.tools)
 		};
 	} catch (error) {
 		if (error instanceof Error && 'status' in error && (error as { status: number }).status === 503) {
@@ -53,6 +73,7 @@ export async function getStorefrontConfig(): Promise<StorefrontConfig> {
 				frontend: DEFAULT_FRONTEND,
 				auth: DEFAULT_AUTH,
 				notifications: DEFAULT_NOTIFICATIONS,
+				tools: DEFAULT_TOOLS,
 				configUnavailable: true
 			};
 		}
@@ -61,6 +82,7 @@ export async function getStorefrontConfig(): Promise<StorefrontConfig> {
 			frontend: DEFAULT_FRONTEND,
 			auth: DEFAULT_AUTH,
 			notifications: DEFAULT_NOTIFICATIONS,
+			tools: DEFAULT_TOOLS,
 			configUnavailable: true
 		};
 	}
