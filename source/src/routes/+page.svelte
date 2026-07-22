@@ -39,7 +39,12 @@
 		<section class="home-section">
 			<div class="home-section__header home-section__header--centered">
 				<h2 class="home-section__title">{category.name}</h2>
-				<a href={resolve('/categories/[slug]', { slug: category.slug })}>View all</a>
+				<a
+					class="home-section__view-all"
+					href={resolve('/categories/[slug]', { slug: category.slug })}
+				>
+					View all <span class="home-section__view-all-arrow" aria-hidden="true">→</span>
+				</a>
 			</div>
 			<ProductGrid products={products.items} {layout} />
 		</section>

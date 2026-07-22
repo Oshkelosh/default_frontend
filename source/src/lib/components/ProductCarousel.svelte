@@ -187,7 +187,7 @@
 							class:product-carousel__slide--active={index === trackIndex}
 							aria-hidden={index !== trackIndex}
 						>
-							<ProductCard product={slide.product} imageLoading="eager" />
+							<ProductCard product={slide.product} variant="hero" imageLoading="eager" />
 							{#if hasMultiple}
 								<button
 									type="button"
@@ -250,7 +250,7 @@
 	.product-carousel__window {
 		flex: 1;
 		overflow: hidden;
-		min-height: 18rem;
+		min-height: 22rem;
 	}
 
 	.product-carousel__strip {

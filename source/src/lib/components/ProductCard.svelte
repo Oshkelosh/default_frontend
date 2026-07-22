@@ -12,7 +12,7 @@
 	}: {
 		product: Product;
 		imageLoading?: 'lazy' | 'eager';
-		variant?: 'default' | 'grid';
+		variant?: 'default' | 'grid' | 'hero';
 	} = $props();
 
 	let busy = $state<'add' | 'buy' | null>(null);
@@ -71,7 +71,11 @@
 	}
 </script>
 
-<article class="product-card" class:product-card--grid={variant === 'grid'}>
+<article
+	class="product-card"
+	class:product-card--grid={variant === 'grid'}
+	class:product-card--hero={variant === 'hero'}
+>
 	<a {href} class="product-card__link">
 		<div class="product-card__image">
 			{#if imageUrl}
@@ -86,32 +90,34 @@
 		</div>
 	</a>
 
-	<div class="product-card__actions">
-		<button
-			type="button"
-			class="btn btn--secondary product-card__btn"
-			disabled={!purchasable || busy !== null}
-			onclick={handleAddToCart}
-		>
-			{#if busy === 'add'}
-				Adding…
-			{:else if feedback}
-				{feedback}
-			{:else}
-				Add to cart
-			{/if}
-		</button>
-		<button
-			type="button"
-			class="btn btn--primary product-card__btn"
-			disabled={!purchasable || busy !== null}
-			onclick={handleBuyNow}
-		>
-			{busy === 'buy' ? 'Starting…' : 'Buy now'}
-		</button>
-	</div>
+	{#if variant !== 'hero'}
+		<div class="product-card__actions">
+			<button
+				type="button"
+				class="btn btn--secondary product-card__btn"
+				disabled={!purchasable || busy !== null}
+				onclick={handleAddToCart}
+			>
+				{#if busy === 'add'}
+					Adding…
+				{:else if feedback}
+					{feedback}
+				{:else}
+					Add to cart
+				{/if}
+			</button>
+			<button
+				type="button"
+				class="btn btn--primary product-card__btn"
+				disabled={!purchasable || busy !== null}
+				onclick={handleBuyNow}
+			>
+				{busy === 'buy' ? 'Starting…' : 'Buy now'}
+			</button>
+		</div>
 
-	{#if actionError}
-		<p class="product-card__error" role="alert">{actionError}</p>
+		{#if actionError}
+			<p class="product-card__error" role="alert">{actionError}</p>
+		{/if}
 	{/if}
 </article>

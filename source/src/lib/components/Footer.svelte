@@ -11,7 +11,7 @@
 
 <footer class="shop-footer">
 	<div class="container shop-footer__inner">
-		<p>&copy; {new Date().getFullYear()} {site.store_name} - Powered by <a href="https://github.com/oshkelosh">Oshkelosh</a></p>
+		<p>&copy; {new Date().getFullYear()} {site.store_name} | Powered by <a href="https://github.com/oshkelosh" target="_blank" rel="noopener noreferrer">Oshkelosh</a></p>
 		<div class="shop-footer__links">
 			{#if showAboutLink}
 				<a href={resolve('/about')}>About</a>
