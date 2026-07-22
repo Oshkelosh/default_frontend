@@ -1,1 +1,0 @@
-import{t as e}from"./DZL7O_2V.js";async function t(){let t=await e(`/api/v1/categories`);return Array.isArray(t)?t:t.items??[]}async function n(t){return e(`/api/v1/categories/${encodeURIComponent(t)}`)}export{t as n,n as t};

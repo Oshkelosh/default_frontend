@@ -1,0 +1,1 @@
+function e(e){return!!e.privacy_policy_enabled&&!!e.privacy_policy_body?.trim()}function t(e){return!!e.about_page_enabled&&!!e.about_page_body?.trim()}var n=class extends Error{status;constructor(e,t){super(e),this.name=`ApiError`,this.status=t}};export{t as n,e as r,n as t};

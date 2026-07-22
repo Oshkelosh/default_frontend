@@ -1,17 +1,21 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import type { SiteSettings } from '$lib/types';
-	import { isPrivacyPolicyPublished } from '$lib/types';
+	import { isAboutPagePublished, isPrivacyPolicyPublished } from '$lib/types';
 
 	let { site }: { site: SiteSettings } = $props();
 
+	const showAboutLink = $derived(isAboutPagePublished(site));
 	const showPrivacyLink = $derived(isPrivacyPolicyPublished(site));
 </script>
 
 <footer class="shop-footer">
 	<div class="container shop-footer__inner">
-		<p>&copy; {new Date().getFullYear()} {site.store_name}</p>
+		<p>&copy; {new Date().getFullYear()} {site.store_name} - Powered by <a href="https://github.com/oshkelosh">Oshkelosh</a></p>
 		<div class="shop-footer__links">
+			{#if showAboutLink}
+				<a href={resolve('/about')}>About</a>
+			{/if}
 			{#if showPrivacyLink}
 				<a href={resolve('/privacy')}>Privacy policy</a>
 			{/if}

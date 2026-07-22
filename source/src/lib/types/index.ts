@@ -16,11 +16,20 @@ export interface SiteSettings {
 	privacy_policy_title?: string;
 	privacy_policy_body?: string | null;
 	privacy_policy_effective_date?: string | null;
+	about_page_enabled?: boolean;
+	about_page_title?: string;
+	about_page_body?: string | null;
+	about_contact_body?: string | null;
 }
 
 /** True when the built-in /privacy page should be linked and indexed. */
 export function isPrivacyPolicyPublished(site: SiteSettings): boolean {
 	return !!site.privacy_policy_enabled && !!site.privacy_policy_body?.trim();
+}
+
+/** True when the built-in /about page should be linked and indexed. */
+export function isAboutPagePublished(site: SiteSettings): boolean {
+	return !!site.about_page_enabled && !!site.about_page_body?.trim();
 }
 
 export interface FrontendConfig {
