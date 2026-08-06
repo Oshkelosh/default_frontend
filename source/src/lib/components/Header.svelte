@@ -2,12 +2,21 @@
 	import { resolve } from '$app/paths';
 	import { authState } from '$lib/auth/session.svelte';
 	import { getCartItemCount } from '$lib/cart/cart.svelte';
-	import type { SiteSettings } from '$lib/types';
+	import type { SiteSettings, StorefrontNavLink } from '$lib/types';
 	import SearchBar from './SearchBar.svelte';
 
-	let { site }: { site: SiteSettings } = $props();
+	let {
+		site,
+		navLinks = []
+	}: {
+		site: SiteSettings;
+		navLinks?: StorefrontNavLink[];
+	} = $props();
 
 	const itemCount = $derived(getCartItemCount());
+	const toolLinks = $derived(
+		(navLinks ?? []).filter((link) => link.label?.trim() && link.href?.trim())
+	);
 </script>
 
 <header class="shop-header">
@@ -22,6 +31,10 @@
 
 		<div class="shop-header__center">
 			<a href={resolve('/categories')} class="shop-header__btn">Categories</a>
+			{#each toolLinks as link (link.href)}
+				<span class="shop-header__sep" aria-hidden="true">|</span>
+				<a href={link.href} class="shop-header__btn">{link.label}</a>
+			{/each}
 			<span class="shop-header__sep" aria-hidden="true">|</span>
 			<SearchBar variant="header" />
 		</div>

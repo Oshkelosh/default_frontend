@@ -59,7 +59,7 @@
 	</div>
 {/if}
 
-<Header {site} />
+<Header {site} navLinks={data.config.tools?.nav_links ?? []} />
 
 <main class="container" style="padding: 2rem 0;">
 	{@render children()}

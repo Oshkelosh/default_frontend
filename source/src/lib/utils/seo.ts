@@ -41,6 +41,29 @@ export function breadcrumbJsonLd(items: Array<{ name: string; url: string }>): R
 	};
 }
 
+export function itemListJsonLd(
+	name: string,
+	url: string,
+	items: Array<{ name: string; url: string }>
+): Record<string, unknown> {
+	return {
+		'@context': 'https://schema.org',
+		'@type': 'CollectionPage',
+		name,
+		url,
+		mainEntity: {
+			'@type': 'ItemList',
+			numberOfItems: items.length,
+			itemListElement: items.map((item, index) => ({
+				'@type': 'ListItem',
+				position: index + 1,
+				name: item.name,
+				url: item.url
+			}))
+		}
+	};
+}
+
 export function productTitle(product: Product, storeName: string): string {
 	return product.meta_title?.trim() || `${product.name} | ${storeName}`;
 }
@@ -125,6 +148,10 @@ export function productJsonLd(
 	};
 	if (image) {
 		payload.image = [image];
+	}
+	const categoryName = product.category_name?.trim();
+	if (categoryName) {
+		payload.category = categoryName;
 	}
 	return payload;
 }

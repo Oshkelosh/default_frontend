@@ -69,15 +69,25 @@
 	const canonical = $derived(
 		product ? absoluteUrl(site, `/products/${productSlug(product)}`) : null
 	);
-	const breadcrumbs = $derived(
-		product
-			? breadcrumbJsonLd([
-					{ name: 'Home', url: absoluteUrl(site, '/') },
-					{ name: 'Products', url: absoluteUrl(site, '/products') },
-					{ name: product.name, url: canonical ?? absoluteUrl(site, `/products/${productSlug(product)}`) }
-				])
-			: null
-	);
+	const categorySlug = $derived(product?.category_slug || product?.category || null);
+	const categoryName = $derived(product?.category_name || categorySlug);
+	const breadcrumbs = $derived.by(() => {
+		if (!product) return null;
+		const productUrl = canonical ?? absoluteUrl(site, `/products/${productSlug(product)}`);
+		if (categorySlug) {
+			return breadcrumbJsonLd([
+				{ name: 'Home', url: absoluteUrl(site, '/') },
+				{ name: 'Categories', url: absoluteUrl(site, '/categories') },
+				{ name: categoryName ?? categorySlug, url: absoluteUrl(site, `/categories/${categorySlug}`) },
+				{ name: product.name, url: productUrl }
+			]);
+		}
+		return breadcrumbJsonLd([
+			{ name: 'Home', url: absoluteUrl(site, '/') },
+			{ name: 'Products', url: absoluteUrl(site, '/products') },
+			{ name: product.name, url: productUrl }
+		]);
+	});
 	const optionEntries = $derived(
 		product?.options ? Object.entries(product.options) : []
 	);
@@ -101,7 +111,13 @@
 	<nav aria-label="Breadcrumb" class="breadcrumbs">
 		<a href={resolve('/')}>Home</a>
 		<span aria-hidden="true">/</span>
-		<a href={resolve('/products')}>Products</a>
+		{#if categorySlug}
+			<a href={resolve('/categories')}>Categories</a>
+			<span aria-hidden="true">/</span>
+			<a href={resolve('/categories/[slug]', { slug: categorySlug })}>{categoryName}</a>
+		{:else}
+			<a href={resolve('/products')}>Products</a>
+		{/if}
 		<span aria-hidden="true">/</span>
 		<span>{product.name}</span>
 	</nav>
@@ -114,12 +130,12 @@
 		</div>
 
 		<div class="product-detail__info">
-			{#if product.category}
+			{#if categorySlug}
 				<a
 					class="product-detail__category"
-					href={resolve('/categories/[slug]', { slug: product.category })}
+					href={resolve('/categories/[slug]', { slug: categorySlug })}
 				>
-					{product.category}
+					{categoryName}
 				</a>
 			{/if}
 

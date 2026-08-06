@@ -431,6 +431,29 @@ img {
 	color: var(--color-primary);
 }
 
+.articles-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	display: grid;
+	gap: 0.75rem;
+}
+
+.articles-list a {
+	display: block;
+	padding: 1rem 1.25rem;
+	border: 1px solid var(--color-secondary-border);
+	border-radius: var(--radius);
+	background: white;
+	text-decoration: none;
+	color: inherit;
+}
+
+.articles-list a:hover {
+	border-color: var(--color-primary-border);
+	background: var(--color-secondary-subtle);
+}
+
 .category-list {
 	list-style: none;
 	padding: 0;
@@ -744,4 +767,93 @@ img {
 		transform: none;
 		margin-top: 0.25rem;
 	}
+}
+
+/* Server-injected catalog nav (adopted into footer on hydrate). */
+.seo-catalog-nav {
+	margin: 0;
+	padding: 0;
+	background: transparent;
+	color: var(--clr-muted);
+	font-family: var(--font-sans);
+	font-size: 0.875rem;
+	line-height: 1.4;
+}
+
+.seo-catalog-nav__inner {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 0.75rem 1.25rem;
+}
+
+.seo-catalog-nav__item {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+	position: relative;
+}
+
+.seo-catalog-nav__menu {
+	position: relative;
+}
+
+.seo-catalog-nav__menu summary {
+	cursor: pointer;
+	list-style: none;
+	display: inline-flex;
+	align-items: center;
+	padding: 0.1rem 0.2rem;
+	border-radius: 4px;
+	user-select: none;
+}
+
+.seo-catalog-nav__menu summary::-webkit-details-marker {
+	display: none;
+}
+
+.seo-catalog-nav__menu summary::marker {
+	content: '';
+}
+
+.seo-catalog-nav__menu[open] summary {
+	background: var(--color-secondary-muted);
+}
+
+.seo-catalog-nav__menu ul {
+	list-style: none;
+	margin: 0;
+	padding: 0.5rem 0.75rem;
+	position: absolute;
+	left: 0;
+	bottom: calc(100% + 0.35rem);
+	z-index: 20;
+	min-width: 12rem;
+	max-width: min(90vw, 22rem);
+	max-height: 16rem;
+	overflow: auto;
+	background: var(--clr-surface);
+	border: 1px solid var(--color-secondary-border);
+	border-radius: var(--radius);
+	box-shadow: 0 4px 14px color-mix(in oklch, var(--clr-text) 12%, transparent);
+}
+
+.seo-catalog-nav li {
+	break-inside: avoid;
+	margin: 0 0 0.35rem;
+}
+
+.seo-catalog-nav li:last-child {
+	margin-bottom: 0;
+}
+
+.seo-catalog-nav a {
+	color: var(--clr-muted);
+	text-decoration: none;
+}
+
+.seo-catalog-nav a:hover {
+	color: var(--color-primary);
+	text-decoration: underline;
 }

@@ -12,7 +12,7 @@ const DEFAULT_AUTH: AuthConfig = { sso_providers: [] };
 
 const DEFAULT_NOTIFICATIONS: NotificationsConfig = { push: null };
 
-const DEFAULT_TOOLS: ToolsConfig = { scripts: [] };
+const DEFAULT_TOOLS: ToolsConfig = { scripts: [], nav_links: [] };
 
 const DEFAULT_SITE: SiteSettings = {
 	store_name: 'Oshkelosh',
@@ -38,11 +38,22 @@ const DEFAULT_FRONTEND: ActiveFrontendInfo = {
 };
 
 function normalizeTools(tools?: ToolsConfig | null): ToolsConfig {
-	if (!tools) return { ...DEFAULT_TOOLS, scripts: [] };
+	if (!tools) return { ...DEFAULT_TOOLS, scripts: [], nav_links: [] };
+	const nav_links = Array.isArray(tools.nav_links)
+		? tools.nav_links.filter(
+				(link): link is { label: string; href: string } =>
+					!!link &&
+					typeof link.label === 'string' &&
+					typeof link.href === 'string' &&
+					!!link.label.trim() &&
+					!!link.href.trim()
+			)
+		: [];
 	return {
 		...DEFAULT_TOOLS,
 		...tools,
-		scripts: Array.isArray(tools.scripts) ? tools.scripts : []
+		scripts: Array.isArray(tools.scripts) ? tools.scripts : [],
+		nav_links
 	};
 }
 

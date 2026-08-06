@@ -5,7 +5,8 @@
 	import Pagination from '$lib/components/Pagination.svelte';
 	import EmptyState from '$lib/components/EmptyState.svelte';
 	import ErrorState from '$lib/components/ErrorState.svelte';
-	import { absoluteUrl, breadcrumbJsonLd, truncateText } from '$lib/utils/seo';
+	import { absoluteUrl, breadcrumbJsonLd, itemListJsonLd, truncateText } from '$lib/utils/seo';
+	import { productSlug } from '$lib/utils/product';
 	import { invalidateAll } from '$app/navigation';
 
 	let { data } = $props();
@@ -18,6 +19,29 @@
 	const canonical = $derived(
 		category ? absoluteUrl(site, `/categories/${category.slug}`) : null
 	);
+	const productListItems = $derived(
+		(data.products.items ?? []).map((product) => ({
+			name: product.name,
+			url: absoluteUrl(site, `/products/${productSlug(product)}`)
+		}))
+	);
+	const jsonLd = $derived.by(() => {
+		if (!category) return [];
+		const pageUrl = canonical ?? absoluteUrl(site, `/categories/${category.slug}`);
+		const crumbs = [
+			{ name: 'Home', url: absoluteUrl(site, '/') },
+			{ name: 'Categories', url: absoluteUrl(site, '/categories') },
+			{ name: category.name, url: pageUrl }
+		];
+		return [
+			breadcrumbJsonLd(crumbs),
+			itemListJsonLd(
+				category.meta_title || `${category.name} | ${site.store_name}`,
+				pageUrl,
+				productListItems
+			)
+		];
+	});
 </script>
 
 {#if category}
@@ -27,11 +51,7 @@
 		{canonical}
 		siteName={site.store_name}
 		ogImage={site.logo_url}
-		jsonLd={[breadcrumbJsonLd([
-			{ name: 'Home', url: absoluteUrl(site, '/') },
-			{ name: 'Products', url: absoluteUrl(site, '/products') },
-			{ name: category.name, url: canonical ?? absoluteUrl(site, `/categories/${category.slug}`) }
-		])]}
+		jsonLd={jsonLd}
 	/>
 {/if}
 

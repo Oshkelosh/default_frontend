@@ -4,7 +4,8 @@
 	import Pagination from '$lib/components/Pagination.svelte';
 	import EmptyState from '$lib/components/EmptyState.svelte';
 	import ErrorState from '$lib/components/ErrorState.svelte';
-	import { absoluteUrl } from '$lib/utils/seo';
+	import { absoluteUrl, itemListJsonLd } from '$lib/utils/seo';
+	import { productSlug } from '$lib/utils/product';
 	import { invalidateAll } from '$app/navigation';
 
 	let { data } = $props();
@@ -13,14 +14,22 @@
 	const currentPage = $derived(data.products.page ?? 1);
 	const totalPages = $derived(data.products.pages ?? 1);
 	const site = $derived(data.config.site);
+	const canonical = $derived(absoluteUrl(site, '/products'));
+	const productListItems = $derived(
+		(data.products.items ?? []).map((product) => ({
+			name: product.name,
+			url: absoluteUrl(site, `/products/${productSlug(product)}`)
+		}))
+	);
 </script>
 
 <SeoHead
 	title={`Products | ${site.store_name}`}
 	description={site.meta_description}
-	canonical={absoluteUrl(site, '/products')}
+	canonical={canonical}
 	siteName={site.store_name}
 	ogImage={site.logo_url}
+	jsonLd={[itemListJsonLd(`Products | ${site.store_name}`, canonical, productListItems)]}
 />
 
 <div class="page-header">

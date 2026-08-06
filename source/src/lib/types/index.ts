@@ -63,8 +63,14 @@ export interface StorefrontScript {
 	routes?: 'all' | 'public' | 'private';
 }
 
+export interface StorefrontNavLink {
+	label: string;
+	href: string;
+}
+
 export interface ToolsConfig {
 	scripts: StorefrontScript[];
+	nav_links?: StorefrontNavLink[];
 	consent_categories?: string[];
 }
 
@@ -131,6 +137,8 @@ export interface Product {
 	options?: Record<string, string>;
 	status: string;
 	category?: string | null;
+	category_slug?: string | null;
+	category_name?: string | null;
 	tags?: Record<string, unknown>[];
 	images?: ProductImage[];
 	created_at?: string;

@@ -7,11 +7,33 @@
 
 	const showAboutLink = $derived(isAboutPagePublished(site));
 	const showPrivacyLink = $derived(isPrivacyPolicyPublished(site));
+
+	/** Adopt server-injected #seo-catalog-nav into the footer (crawler HTML stays intact). */
+	function adoptCatalogNav(node: HTMLElement) {
+		const nav = document.getElementById('seo-catalog-nav');
+		if (nav && nav.parentElement !== node) {
+			node.appendChild(nav);
+		}
+		return {
+			destroy() {
+				// Leave nav in place; next footer mount will re-adopt if needed.
+			}
+		};
+	}
 </script>
 
 <footer class="shop-footer">
 	<div class="container shop-footer__inner">
-		<p>&copy; {new Date().getFullYear()} {site.store_name} | Powered by <a href="https://github.com/oshkelosh" target="_blank" rel="noopener noreferrer">Oshkelosh</a></p>
+		<div class="shop-footer__brand">
+			<p>
+				&copy; {new Date().getFullYear()}
+				{site.store_name} | Powered by
+				<a href="https://github.com/oshkelosh" target="_blank" rel="noopener noreferrer"
+					>Oshkelosh</a
+				>
+			</p>
+			<div class="shop-footer__catalog" use:adoptCatalogNav></div>
+		</div>
 		<div class="shop-footer__links">
 			{#if showAboutLink}
 				<a href={resolve('/about')}>About</a>
@@ -40,16 +62,46 @@
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: space-between;
-		gap: 0.5rem;
+		gap: 1rem 1.5rem;
 	}
 
-	.shop-footer p {
+	.shop-footer__brand {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.75rem;
+		min-width: min(100%, 16rem);
+	}
+
+	.shop-footer__brand p {
 		margin: 0;
+	}
+
+	.shop-footer__catalog {
+		min-height: 0;
+	}
+
+	.shop-footer__catalog :global(.seo-catalog-nav) {
+		margin: 0;
+		padding: 0;
+		background: transparent;
+		border: none;
+		font: inherit;
+		color: inherit;
+	}
+
+	.shop-footer__catalog :global(.seo-catalog-nav__inner) {
+		width: auto;
+		max-width: none;
+		margin: 0;
+		padding: 0;
+		justify-content: flex-start;
 	}
 
 	.shop-footer__links {
 		display: flex;
 		flex-wrap: wrap;
+		align-items: flex-start;
 		gap: 1rem;
 	}
 
