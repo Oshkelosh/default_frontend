@@ -8,7 +8,6 @@
 	import {
 		formatComparePrice,
 		formatPrice,
-		getPrimaryImage,
 		getProductImages,
 		productSlug
 	} from '$lib/utils/product';
@@ -30,23 +29,35 @@
 	const site = $derived(data.config.site);
 	let selectedVariant = $state<ProductVariant | null>(null);
 
+	const galleryOptions = {
+		size: 'full' as const,
+		includeSrcset: true,
+		sizes: '(min-width: 900px) min(36rem, 50vw), 100vw'
+	};
 	const images = $derived.by(() => {
 		if (!product) return [];
 		const variantImages = selectedVariant?.images?.length
 			? selectedVariant.images
 			: null;
 		if (variantImages) {
-			return getProductImages({ ...product, images: variantImages });
+			return getProductImages({ ...product, images: variantImages }, galleryOptions);
 		}
-		return getProductImages(product);
+		return getProductImages(product, galleryOptions);
 	});
 	const imageKey = $derived(images.map((image) => image.url).join('|'));
 	const imageUrl = $derived.by(() => {
 		if (!product) return null;
 		if (selectedVariant?.images?.length) {
-			return getProductImages({ ...product, images: selectedVariant.images })[0]?.url ?? null;
+			return (
+				getProductImages({ ...product, images: selectedVariant.images }, { size: 'full' })[0]
+					?.url ?? null
+			);
 		}
-		return sharedPrimaryImageUrl(product) ?? getPrimaryImage(product);
+		return sharedPrimaryImageUrl(product) ?? getProductImages(product, { size: 'full' })[0]?.url ?? null;
+	});
+	const imageAlt = $derived.by(() => {
+		if (!product) return null;
+		return images[0]?.alt ?? product.name;
 	});
 	const price = $derived(
 		selectedVariant ? formatCents(selectedVariant.price_cents) : product ? formatPrice(product) : ''
@@ -99,6 +110,7 @@
 		description={productDescription(product, site.meta_description)}
 		canonical={canonical}
 		ogImage={imageUrl}
+		ogImageAlt={imageAlt}
 		ogType="product"
 		siteName={site.store_name}
 		jsonLd={[productJsonLd(product, site, imageUrl), ...(breadcrumbs ? [breadcrumbs] : [])]}

@@ -33,7 +33,12 @@
 			<img
 				class="product-gallery__main"
 				src={selectedImage.url}
+				srcset={selectedImage.srcset}
+				sizes={selectedImage.sizes}
 				alt={selectedImage.alt}
+				loading="eager"
+				fetchpriority="high"
+				decoding="async"
 			/>
 		{:else}
 			<span class="product-gallery__empty">No image available</span>
@@ -57,7 +62,12 @@
 					onclick={() => selectImage(index)}
 					onkeydown={(event) => handleThumbKeydown(event, index)}
 				>
-					<img src={image.url} alt="" />
+					<img
+						src={image.thumbUrl ?? image.url}
+						alt=""
+						loading="lazy"
+						decoding="async"
+					/>
 				</button>
 			{/each}
 		</div>

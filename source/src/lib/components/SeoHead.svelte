@@ -4,6 +4,7 @@
 		description = '',
 		canonical = '',
 		ogImage = null,
+		ogImageAlt = null,
 		ogType = 'website',
 		siteName = null,
 		jsonLd = [],
@@ -13,6 +14,7 @@
 		description?: string | null;
 		canonical?: string | null;
 		ogImage?: string | null;
+		ogImageAlt?: string | null;
 		ogType?: string;
 		siteName?: string | null;
 		jsonLd?: Array<Record<string, unknown>>;
@@ -48,6 +50,9 @@
 	{/if}
 	{#if ogImage}
 		<meta property="og:image" content={ogImage} />
+		{#if ogImageAlt}
+			<meta property="og:image:alt" content={ogImageAlt} />
+		{/if}
 	{/if}
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content={title} />
@@ -56,6 +61,9 @@
 	{/if}
 	{#if ogImage}
 		<meta name="twitter:image" content={ogImage} />
+		{#if ogImageAlt}
+			<meta name="twitter:image:alt" content={ogImageAlt} />
+		{/if}
 	{/if}
 	{#each jsonLdScripts as schema, index (index)}
 		{@html `<script type="application/ld+json">${JSON.stringify(schema)}</script>`}

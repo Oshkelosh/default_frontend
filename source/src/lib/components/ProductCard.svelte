@@ -3,7 +3,13 @@
 	import { addItem, buyNow } from '$lib/cart/cart.svelte';
 	import { getProductBySlug } from '$lib/api/products';
 	import type { Product } from '$lib/types';
-	import { formatPrice, getPrimaryImage, isPurchasable, productSlug } from '$lib/utils/product';
+	import {
+		formatPrice,
+		getPrimaryImage,
+		getPrimaryImageAlt,
+		isPurchasable,
+		productSlug
+	} from '$lib/utils/product';
 
 	let {
 		product,
@@ -20,6 +26,7 @@
 	let actionError = $state<string | null>(null);
 
 	const imageUrl = $derived(getPrimaryImage(product));
+	const imageAlt = $derived(getPrimaryImageAlt(product));
 	const price = $derived(formatPrice(product));
 	const href = $derived(resolve('/products/[slug]', { slug: productSlug(product) }));
 	const purchasable = $derived(isPurchasable(product));
@@ -79,7 +86,7 @@
 	<a {href} class="product-card__link">
 		<div class="product-card__image">
 			{#if imageUrl}
-				<img src={imageUrl} alt={product.name} loading={imageLoading} class="product-card__img" />
+				<img src={imageUrl} alt={imageAlt} loading={imageLoading} class="product-card__img" />
 			{:else}
 				<span>No image</span>
 			{/if}

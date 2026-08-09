@@ -128,6 +128,25 @@ export function buildProductOffersJsonLd(
 	};
 }
 
+function productImageObjects(product: ProductDetail): Array<Record<string, unknown>> {
+	const sorted = [...(product.images ?? [])].sort(
+		(a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)
+	);
+	const objects: Array<Record<string, unknown>> = [];
+	for (const image of sorted) {
+		if (!image.url) continue;
+		const alt = image.alt_text?.trim() || product.name;
+		objects.push({
+			'@type': 'ImageObject',
+			contentUrl: image.url,
+			url: image.url,
+			name: alt,
+			description: alt
+		});
+	}
+	return objects;
+}
+
 export function productJsonLd(
 	product: ProductDetail,
 	site: SiteSettings,
@@ -135,6 +154,7 @@ export function productJsonLd(
 ): Record<string, unknown> {
 	const active = activeVariants(product.variants);
 	const sku = active.length === 1 && active[0].sku ? active[0].sku : product.sku ?? undefined;
+	const imageObjects = productImageObjects(product);
 	const image = imageUrl ?? sharedPrimaryImageUrl(product);
 
 	const payload: Record<string, unknown> = {
@@ -146,7 +166,9 @@ export function productJsonLd(
 		offers: buildProductOffersJsonLd(product, site, product.variants),
 		url: absoluteUrl(site, `/products/${product.slug ?? product.id}`)
 	};
-	if (image) {
+	if (imageObjects.length > 0) {
+		payload.image = imageObjects;
+	} else if (image) {
 		payload.image = [image];
 	}
 	const categoryName = product.category_name?.trim();

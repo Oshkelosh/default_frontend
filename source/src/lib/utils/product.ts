@@ -6,6 +6,9 @@ export type ResolvedProductImage = {
 	url: string;
 	alt: string;
 	sort_order: number;
+	thumbUrl?: string;
+	srcset?: string;
+	sizes?: string;
 };
 
 export function formatPrice(product: Product): string {
@@ -37,20 +40,51 @@ export function getProductImageUrl(
 	return null;
 }
 
-export function getProductImages(product: Product): ResolvedProductImage[] {
+function buildSrcset(image: ProductImage): string | undefined {
+	const parts: string[] = [];
+	const thumb = image.variants?.thumb;
+	const card = image.variants?.card;
+	if (thumb) parts.push(`${thumb} 256w`);
+	if (card) parts.push(`${card} 800w`);
+	if (image.url) parts.push(`${image.url} 2000w`);
+	return parts.length > 1 ? parts.join(', ') : undefined;
+}
+
+export function getProductImages(
+	product: Product,
+	options?: {
+		size?: 'full' | 'card' | 'thumb';
+		includeSrcset?: boolean;
+		sizes?: string;
+	}
+): ResolvedProductImage[] {
+	const size = options?.size ?? 'card';
 	const sorted = [...(product.images ?? [])].sort(
 		(a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)
 	);
 	const resolved: ResolvedProductImage[] = [];
 
 	for (const [index, image] of sorted.entries()) {
-		const url = getProductImageUrl(image, 'card');
+		const url =
+			size === 'full'
+				? getProductImageUrl(image)
+				: getProductImageUrl(image, size);
 		if (!url) continue;
-		resolved.push({
+		const thumbUrl = getProductImageUrl(image, 'thumb') ?? undefined;
+		const entry: ResolvedProductImage = {
 			url,
 			alt: image.alt_text?.trim() || product.name,
-			sort_order: image.sort_order ?? index
-		});
+			sort_order: image.sort_order ?? index,
+			thumbUrl
+		};
+		if (options?.includeSrcset) {
+			const srcset = buildSrcset(image);
+			if (srcset) {
+				entry.srcset = srcset;
+				entry.sizes = options.sizes ?? '(min-width: 900px) 50vw, 100vw';
+			}
+		}
+		resolved.push(entry);
 	}
 
 	return resolved;
@@ -58,6 +92,10 @@ export function getProductImages(product: Product): ResolvedProductImage[] {
 
 export function getPrimaryImage(product: Product): string | null {
 	return getProductImages(product)[0]?.url ?? null;
+}
+
+export function getPrimaryImageAlt(product: Product): string {
+	return getProductImages(product)[0]?.alt ?? product.name;
 }
 
 export function productSlug(product: Product): string {
