@@ -3,6 +3,7 @@
 	import EmptyState from '$lib/components/EmptyState.svelte';
 	import { isAboutPagePublished } from '$lib/types';
 	import { absoluteUrl, truncateText } from '$lib/utils/seo';
+	import { seoIntro } from '$lib/utils/seoIntro.svelte';
 
 	let { data } = $props();
 
@@ -27,9 +28,11 @@
 {#if published}
 	<article class="about-page">
 		<section class="about-page__section" aria-labelledby="about-heading">
-			<header class="page-header">
-				<h1 id="about-heading">{title}</h1>
-			</header>
+			{#if !seoIntro.present}
+				<header class="page-header">
+					<h1 id="about-heading">{title}</h1>
+				</header>
+			{/if}
 			<div class="about-page__body">{site.about_page_body}</div>
 		</section>
 

@@ -21,7 +21,8 @@ const DEFAULT_SITE: SiteSettings = {
 	font_family: 'system-ui, sans-serif',
 	meta_description: 'Shop our curated collection',
 	site_url: null,
-	shop_currency: 'USD'
+	shop_currency: 'USD',
+	cookie_consent_mode: 'off'
 };
 
 const DEFAULT_FRONTEND: ActiveFrontendInfo = {

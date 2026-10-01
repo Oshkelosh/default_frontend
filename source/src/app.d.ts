@@ -8,6 +8,19 @@ declare global {
 		// interface PageState {}
 		// interface Platform {}
 	}
+
+	interface ZarazConsent {
+		modal?: boolean;
+		APIReady?: boolean;
+	}
+
+	interface Zaraz {
+		consent?: ZarazConsent;
+	}
+
+	interface Window {
+		zaraz?: Zaraz;
+	}
 }
 
 export {};

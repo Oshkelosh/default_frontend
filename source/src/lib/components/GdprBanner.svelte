@@ -3,6 +3,14 @@
 	import { resolve } from '$app/paths';
 	import type { SiteSettings } from '$lib/types';
 	import { isPrivacyPolicyPublished } from '$lib/types';
+	import {
+		ZARAZ_CONSENT_READY_EVENT,
+		ZARAZ_WAIT_MS,
+		REOPEN_COOKIE_NOTICE_EVENT,
+		hostBannerVisible,
+		isZarazConsentReady,
+		resolveCookieConsentMode
+	} from '$lib/consent';
 
 	const STORAGE_KEY = 'oshkelosh_gdpr_dismissed';
 	const DEFAULT_TEXT =
@@ -11,10 +19,58 @@
 	let { site }: { site: SiteSettings } = $props();
 
 	let dismissed = $state(browser ? localStorage.getItem(STORAGE_KEY) === '1' : false);
+	let zarazReady = $state(false);
+	let zarazTimedOut = $state(false);
 
+	const mode = $derived(resolveCookieConsentMode(site));
 	const message = $derived(site.gdpr_banner_text?.trim() || DEFAULT_TEXT);
-	const visible = $derived(browser && !!site.gdpr_banner_enabled && !dismissed);
+	const visible = $derived(
+		browser &&
+			hostBannerVisible({
+				mode,
+				dismissed,
+				zarazReady,
+				zarazTimedOut
+			})
+	);
 	const showPrivacyLink = $derived(isPrivacyPolicyPublished(site));
+
+	$effect(() => {
+		if (!browser || mode !== 'zaraz') return;
+
+		if (isZarazConsentReady()) {
+			zarazReady = true;
+			return;
+		}
+
+		function onReady() {
+			zarazReady = true;
+		}
+
+		window.addEventListener(ZARAZ_CONSENT_READY_EVENT, onReady);
+		const timer = setTimeout(() => {
+			if (isZarazConsentReady()) zarazReady = true;
+			else zarazTimedOut = true;
+		}, ZARAZ_WAIT_MS);
+
+		return () => {
+			window.removeEventListener(ZARAZ_CONSENT_READY_EVENT, onReady);
+			clearTimeout(timer);
+		};
+	});
+
+	$effect(() => {
+		if (!browser) return;
+
+		function reopen() {
+			localStorage.removeItem(STORAGE_KEY);
+			dismissed = false;
+			if (!isZarazConsentReady()) zarazTimedOut = true;
+		}
+
+		window.addEventListener(REOPEN_COOKIE_NOTICE_EVENT, reopen);
+		return () => window.removeEventListener(REOPEN_COOKIE_NOTICE_EVENT, reopen);
+	});
 
 	function accept() {
 		localStorage.setItem(STORAGE_KEY, '1');

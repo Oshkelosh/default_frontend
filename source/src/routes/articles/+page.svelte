@@ -10,6 +10,7 @@
 		itemListJsonLd,
 		truncateText
 	} from '$lib/utils/seo';
+	import { seoIntro } from '$lib/utils/seoIntro.svelte';
 
 	let { data } = $props();
 
@@ -58,9 +59,11 @@
 		<span>{hub.intro_title || 'Articles'}</span>
 	</nav>
 
-	<header class="page-header">
-		<h1>{hub.intro_title || 'Articles'}</h1>
-	</header>
+	{#if !seoIntro.present}
+		<header class="page-header">
+			<h1>{hub.intro_title || 'Articles'}</h1>
+		</header>
+	{/if}
 
 	{#if hub.intro_markdown?.trim()}
 		<div class="md-body">{@html introHtml}</div>

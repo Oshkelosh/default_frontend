@@ -4,6 +4,7 @@
 	import ErrorState from '$lib/components/ErrorState.svelte';
 	import { renderMarkdown } from '$lib/utils/markdown';
 	import { absoluteUrl, breadcrumbJsonLd, truncateText } from '$lib/utils/seo';
+	import { seoIntro } from '$lib/utils/seoIntro.svelte';
 
 	let { data } = $props();
 
@@ -66,9 +67,11 @@
 			<span>{post.title}</span>
 		</nav>
 
-		<header class="page-header">
-			<h1>{post.title}</h1>
-		</header>
+		{#if !seoIntro.present}
+			<header class="page-header">
+				<h1>{post.title}</h1>
+			</header>
+		{/if}
 
 		<div class="md-body">{@html bodyHtml}</div>
 	</article>

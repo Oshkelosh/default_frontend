@@ -5,6 +5,7 @@
 	import EmptyState from '$lib/components/EmptyState.svelte';
 	import ErrorState from '$lib/components/ErrorState.svelte';
 	import { absoluteUrl, itemListJsonLd } from '$lib/utils/seo';
+	import { seoIntro } from '$lib/utils/seoIntro.svelte';
 	import { productSlug } from '$lib/utils/product';
 	import { invalidateAll } from '$app/navigation';
 
@@ -32,10 +33,12 @@
 	jsonLd={[itemListJsonLd(`Products | ${site.store_name}`, canonical, productListItems)]}
 />
 
-<div class="page-header">
-	<h1>Products</h1>
-	<p>Browse our catalog</p>
-</div>
+{#if !seoIntro.present}
+	<div class="page-header">
+		<h1>Products</h1>
+		<p>Browse our catalog</p>
+	</div>
+{/if}
 
 {#if data.error}
 	<ErrorState message={data.error} onRetry={() => invalidateAll()} />

@@ -6,6 +6,7 @@
 	import EmptyState from '$lib/components/EmptyState.svelte';
 	import ErrorState from '$lib/components/ErrorState.svelte';
 	import { absoluteUrl, breadcrumbJsonLd, itemListJsonLd, truncateText } from '$lib/utils/seo';
+	import { seoIntro } from '$lib/utils/seoIntro.svelte';
 	import { productSlug } from '$lib/utils/product';
 	import { invalidateAll } from '$app/navigation';
 
@@ -55,7 +56,7 @@
 	/>
 {/if}
 
-{#if category}
+{#if category && !seoIntro.present}
 	<div class="page-header">
 		<h1>{category.name}</h1>
 		{#if category.description}

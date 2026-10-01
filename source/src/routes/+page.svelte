@@ -6,6 +6,7 @@
 	import EmptyState from '$lib/components/EmptyState.svelte';
 	import ErrorState from '$lib/components/ErrorState.svelte';
 	import { absoluteUrl, organizationJsonLd } from '$lib/utils/seo';
+	import { seoIntro } from '$lib/utils/seoIntro.svelte';
 	import { invalidateAll } from '$app/navigation';
 
 	let { data } = $props();
@@ -25,6 +26,15 @@
 	ogImage={site.logo_url}
 	jsonLd={[organizationJsonLd(site)]}
 />
+
+{#if !seoIntro.present}
+	<header class="page-header">
+		<h1>{site.store_name}</h1>
+		{#if site.meta_description}
+			<p>{site.meta_description}</p>
+		{/if}
+	</header>
+{/if}
 
 {#if data.error}
 	<ErrorState message={data.error} onRetry={() => invalidateAll()} />

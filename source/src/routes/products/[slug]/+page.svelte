@@ -20,6 +20,7 @@
 		productTitle,
 		sharedPrimaryImageUrl
 	} from '$lib/utils/seo';
+	import { seoIntro } from '$lib/utils/seoIntro.svelte';
 	import { invalidateAll } from '$app/navigation';
 	import type { ProductDetail, ProductVariant } from '$lib/types';
 
@@ -151,7 +152,9 @@
 				</a>
 			{/if}
 
-			<h1 class="product-detail__title">{product.name}</h1>
+			{#if !seoIntro.present}
+				<h1 class="product-detail__title">{product.name}</h1>
+			{/if}
 
 			<div class="product-detail__pricing">
 				<p class="product-detail__price">{price}</p>

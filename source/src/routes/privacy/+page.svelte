@@ -3,6 +3,7 @@
 	import EmptyState from '$lib/components/EmptyState.svelte';
 	import { isPrivacyPolicyPublished } from '$lib/types';
 	import { absoluteUrl, truncateText } from '$lib/utils/seo';
+	import { seoIntro } from '$lib/utils/seoIntro.svelte';
 
 	let { data } = $props();
 
@@ -26,7 +27,9 @@
 {#if published}
 	<article class="privacy-page">
 		<header class="page-header">
-			<h1>{title}</h1>
+			{#if !seoIntro.present}
+				<h1>{title}</h1>
+			{/if}
 			{#if site.privacy_policy_effective_date}
 				<p>
 					Effective

@@ -129,6 +129,8 @@ On startup the SPA:
 
 See the [frontend bootstrap contract](../README.md#spa-bootstrap-contract-required) for details.
 
+Cookie consent is configured in host **Site Settings** (`site.cookie_consent_mode`: `off` | `notice` | `zaraz`). The SPA shows the dismissible GDPR banner for `notice`, and for `zaraz` waits for Cloudflare Zaraz then falls back to that banner if the CMP never loads. A footer **Cookie settings** control reopens Zaraz (or the fallback notice). The host does not load `zaraz.js`.
+
 ## API modules
 
 Backend calls live in `source/src/lib/api/`:

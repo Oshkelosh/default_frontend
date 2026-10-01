@@ -10,6 +10,7 @@ export interface SiteSettings {
 	site_url?: string | null;
 	shop_currency?: string;
 	preferred_currency?: string | null;
+	cookie_consent_mode?: 'off' | 'notice' | 'zaraz';
 	gdpr_banner_enabled?: boolean;
 	gdpr_banner_text?: string | null;
 	privacy_policy_enabled?: boolean;

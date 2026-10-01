@@ -4,6 +4,7 @@
 	import EmptyState from '$lib/components/EmptyState.svelte';
 	import ErrorState from '$lib/components/ErrorState.svelte';
 	import { absoluteUrl } from '$lib/utils/seo';
+	import { seoIntro } from '$lib/utils/seoIntro.svelte';
 	import { invalidateAll } from '$app/navigation';
 	let { data } = $props();
 
@@ -18,10 +19,12 @@
 	ogImage={site.logo_url}
 />
 
-<div class="page-header">
-	<h1>Categories</h1>
-	<p>Shop by category</p>
-</div>
+{#if !seoIntro.present}
+	<div class="page-header">
+		<h1>Categories</h1>
+		<p>Shop by category</p>
+	</div>
+{/if}
 
 {#if data.error}
 	<ErrorState message={data.error} onRetry={() => invalidateAll()} />

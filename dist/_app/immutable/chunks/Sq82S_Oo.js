@@ -1,0 +1,1 @@
+import{G as e}from"./B5WS3vA7.js";var t=e({present:typeof document<`u`&&document.getElementById(`seo-intro`)!=null});export{t};

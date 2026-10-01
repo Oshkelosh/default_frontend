@@ -1,5 +1,11 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import {
+		REOPEN_COOKIE_NOTICE_EVENT,
+		openZarazConsentModal,
+		resolveCookieConsentMode,
+		showCookieSettings
+	} from '$lib/consent';
 	import type { SiteSettings } from '$lib/types';
 	import { isAboutPagePublished, isPrivacyPolicyPublished } from '$lib/types';
 
@@ -7,6 +13,13 @@
 
 	const showAboutLink = $derived(isAboutPagePublished(site));
 	const showPrivacyLink = $derived(isPrivacyPolicyPublished(site));
+	const cookieSettings = $derived(showCookieSettings(resolveCookieConsentMode(site)));
+
+	function onCookieSettings() {
+		if (!openZarazConsentModal()) {
+			window.dispatchEvent(new Event(REOPEN_COOKIE_NOTICE_EVENT));
+		}
+	}
 
 	/** Adopt server-injected #seo-catalog-nav into the footer (crawler HTML stays intact). */
 	function adoptCatalogNav(node: HTMLElement) {
@@ -40,6 +53,11 @@
 			{/if}
 			{#if showPrivacyLink}
 				<a href={resolve('/privacy')}>Privacy policy</a>
+			{/if}
+			{#if cookieSettings}
+				<button type="button" class="shop-footer__cookie" onclick={onCookieSettings}>
+					Cookie settings
+				</button>
 			{/if}
 			{#if site.support_email}
 				<a href="mailto:{site.support_email}">{site.support_email}</a>
@@ -105,13 +123,24 @@
 		gap: 1rem;
 	}
 
-	.shop-footer a {
+	.shop-footer a,
+	.shop-footer__cookie {
 		color: var(--clr-muted);
 		text-decoration: none;
 	}
 
-	.shop-footer a:hover {
+	.shop-footer a:hover,
+	.shop-footer__cookie:hover {
 		color: var(--color-primary);
 		text-decoration: underline;
+	}
+
+	.shop-footer__cookie {
+		appearance: none;
+		background: none;
+		border: none;
+		padding: 0;
+		font: inherit;
+		cursor: pointer;
 	}
 </style>
