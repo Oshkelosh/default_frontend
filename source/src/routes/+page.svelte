@@ -28,7 +28,7 @@
 />
 
 {#if !seoIntro.present}
-	<header class="page-header">
+	<header class="page-header page-intro">
 		<h1>{site.store_name}</h1>
 		{#if site.meta_description}
 			<p>{site.meta_description}</p>
